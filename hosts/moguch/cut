@@ -1,0 +1,117 @@
+    pkgs (base16-schemes
+    vim
+    wget
+    killall
+    eza
+    git
+    cmatrix
+    lolcat
+    htop
+    brave
+    lxqt.lxqt-policykit
+    lm_sensors
+    unzip
+    unrar
+    libnotify
+    v4l-utils
+    ydotool
+    duf
+    ncdu
+    jdk8
+    #wl-clip-persist
+    wl-clipboard
+    cliphist
+    pciutils
+    ffmpeg
+    socat
+    cowsay
+    ripgrep
+    lshw
+    bat
+    pkg-config
+    meson
+    hyprpicker
+    ninja
+    brightnessctl
+    virt-viewer
+    swappy
+    appimage-run
+    #networkmanagerapplet
+    yad
+    inxi
+    playerctl
+    nh
+    nixfmt-rfc-style
+    discord
+    libvirt
+    swww
+    grim
+    slurp
+    file-roller
+    swaynotificationcenter
+    imv
+    mpv
+    gimp
+    pavucontrol
+    tree
+    neovide
+    greetd.tuigreet
+    krita
+    qbittorrent
+    calibre
+    (blender.override ({ cudaSupport = true; }))  
+    #blender
+    heroic
+    #cudaPackages.cudatoolkit
+    onlyoffice-bin_latest
+    telegram-desktop
+    (vivaldi.overrideAttrs
+      (oldAttrs: {
+        enableWidevine = false;        
+        proprietaryCodecs = true;
+        dontWrapQtApps = false;
+        dontPatchELF = true;
+        nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [pkgs.kdePackages.wrapQtAppsHook];
+      }))
+    vivaldi-ffmpeg-codecs
+    #xboxdrv
+    scarab
+    #dmraid
+    nvidia-system-monitor-qt
+    yazi
+    #(alpaca.override ({
+    #ollama = pkgs.ollama-cuda;
+    # }))
+    
+    # VSCode с расширениями
+    (vscode-with-extensions.override {
+      vscodeExtensions = with vscode-extensions ;[
+       ms-python.python
+       ms-azuretools.vscode-docker
+       ms-toolsai.jupyter
+       
+      ];
+     })
+
+    # Python + библиотеки
+     python313
+     python313Packages.pip
+     python313Packages.virtualenv
+     python313Packages.manim
+
+    # Manim и зависимости
+     manim
+     ffmpeg
+     texlive.combined.scheme-full
+
+    upscayl
+    protontricks  
+    bluez-alsa
+    bluez-tools
+    blueman
+    pipewire
+    wireplumber
+    lutris-free
+    #shadps4
+    #vintagestory  
+    #starsector)

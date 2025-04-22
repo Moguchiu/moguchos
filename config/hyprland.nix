@@ -16,6 +16,7 @@ let
 in
 with lib;
 {
+  systemd.user.targets.hyprland-session.Unit.Wants = [ "xdg-desktop-autostart.target" ];
   wayland.windowManager.hyprland = {
     enable = true;
     xwayland.enable = true;
@@ -26,6 +27,7 @@ with lib;
       in
       concatStrings [
         ''
+          env = GTK_USE_PORTAL, 1
           env = NIXOS_OZONE_WL, 1
           env = NIXPKGS_ALLOW_UNFREE, 1
           env = XDG_CURRENT_DESKTOP, Hyprland
@@ -38,15 +40,23 @@ with lib;
           env = QT_AUTO_SCREEN_SCALE_FACTOR, 1
           env = SDL_VIDEODRIVER, x11
           env = MOZ_ENABLE_WAYLAND, 1
+          env = LIBVA_DRIVER_NAME, nvidia
+          env = XDG_SESSION_TYPE, wayland  
+          env = __GLX_VENDOR_LIBRARY_NAME, nvidia
+          env = GBM_BACKEND, nvidia-drm
           exec-once = dbus-update-activation-environment --systemd --all
           exec-once = systemctl --user import-environment QT_QPA_PLATFORMTHEME WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
           exec-once = killall -q swww;sleep .5 && swww init
           exec-once = killall -q waybar;sleep .5 && waybar
-          exec-once = killall -q swaync;sleep .5 && swaync
+          exec-once = killall -q swaync;sleep .5 && swaync          
           exec-once = nm-applet --indicator
           exec-once = lxqt-policykit-agent
-          exec-once = sleep 1.5 && swww img /home/${username}/Pictures/Wallpapers/beautifulmountainscape.jpg
-          monitor=,preferred,auto,1
+          exec-once = sleep 1.5 && swww img /home/${username}/Pictures/Wallpapers/Hollow_Emblem.png
+          exec-once = wl-paste --type text --watch cliphist store 
+          exec-once = wl-paste --type image --watch cliphist store 
+          exec-once = wl-clip-persist --clipboard regular --display wayland-1
+          
+          monitor =, preferred, auto, 1
           ${extraMonitorSettings}
           general {
             gaps_in = 6
@@ -54,13 +64,12 @@ with lib;
             border_size = 2
             layout = dwindle
             resize_on_border = true
-            col.active_border = rgb(${config.stylix.base16Scheme.base08}) rgb(${config.stylix.base16Scheme.base0C}) 45deg
+            col.active_border = rgb(${config.stylix.base16Scheme.base0A}) rgb(${config.stylix.base16Scheme.base0C}) 45deg
             col.inactive_border = rgb(${config.stylix.base16Scheme.base01})
           }
           input {
             kb_layout = ${keyboardLayout}
             kb_options = grp:alt_shift_toggle
-            kb_options = caps:super
             follow_mouse = 1
             touchpad {
               natural_scroll = true
@@ -70,17 +79,12 @@ with lib;
             sensitivity = 0 # -1.0 - 1.0, 0 means no modification.
             accel_profile = flat
           }
-          windowrule = noborder,^(wofi)$
-          windowrule = center,^(wofi)$
-          windowrule = center,^(steam)$
-          windowrule = float, nm-connection-editor|blueman-manager
-          windowrule = float, swayimg|vlc|Viewnior|pavucontrol
-          windowrule = float, nwg-look|qt5ct|mpv
-          windowrule = float, zoom
-          windowrulev2 = stayfocused, title:^()$,class:^(steam)$
-          windowrulev2 = minsize 1 1, title:^()$,class:^(steam)$
-          windowrulev2 = opacity 0.9 0.7, class:^(Brave)$
+          windowrule = noborder, class:^(wofi)$
+          windowrule = center, class:^(wofi)$
           windowrulev2 = opacity 0.9 0.7, class:^(thunar)$
+          windowrulev2 = opacity 0.9 0.7, class:^(neovide)$
+          windowrulev2 = opacity 0.9 0.7, class:^(vim)$
+          windowrulev2 = opacity 0.9 0.7, class:^(${terminal})$
           gestures {
             workspace_swipe = true
             workspace_swipe_fingers = 3
@@ -89,6 +93,10 @@ with lib;
             initial_workspace_tracking = 0
             mouse_move_enables_dpms = true
             key_press_enables_dpms = false
+            disable_hyprland_logo = true
+            animate_manual_resizes = true
+            new_window_takes_over_fullscreen = 1
+            
           }
           animations {
             enabled = yes
@@ -106,10 +114,12 @@ with lib;
           }
           decoration {
             rounding = 10
-            drop_shadow = true
-            shadow_range = 4
-            shadow_render_power = 3
-            col.shadow = rgba(1a1a1aee)
+            shadow {
+                enabled = false
+                range = 4
+                render_power = 3
+                color = rgba(1a1a1aee)
+            }
             blur {
                 enabled = true
                 size = 5
@@ -118,10 +128,17 @@ with lib;
                 ignore_opacity = off
             }
           }
+          
+          cursor {
+           sync_gsettings_theme = true
+           no_hardware_cursors = true
+          }
+
           plugin {
             hyprtrails {
             }
           }
+
           dwindle {
             pseudotile = true
             preserve_split = true
@@ -202,7 +219,7 @@ with lib;
           bind = ,XF86AudioPrev, exec, playerctl previous
           bind = ,XF86MonBrightnessDown,exec,brightnessctl set 5%-
           bind = ,XF86MonBrightnessUp,exec,brightnessctl set +5%
-        ''
+          ''
       ];
   };
 }

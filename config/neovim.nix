@@ -1,6 +1,6 @@
 { pkgs, inputs, ... }:
 let
-  finecmdline = pkgs.vimUtils.buildVimPlugin {
+ finecmdline = pkgs.vimUtils.buildVimPlugin {
     name = "fine-cmdline";
     src = inputs.fine-cmdline;
   };
@@ -79,9 +79,12 @@ in
         ${builtins.readFile ./nvim/plugins/fine-cmdline.lua}
         require("ibl").setup()
         require("bufferline").setup{}
-        require("lualine").setup({
+        require("lualine").setup{
+         options = {
           icons_enabled = true,
-        })
+          theme = 'gruvbox_dark',
+          },
+        }
       '';
     };
   };

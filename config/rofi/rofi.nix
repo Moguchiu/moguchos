@@ -25,8 +25,8 @@
             bg = mkLiteral "#${config.stylix.base16Scheme.base00}";
             bg-alt = mkLiteral "#${config.stylix.base16Scheme.base09}";
             foreground = mkLiteral "#${config.stylix.base16Scheme.base01}";
-            selected = mkLiteral "#${config.stylix.base16Scheme.base08}";
-            active = mkLiteral "#${config.stylix.base16Scheme.base0B}";
+            selected = mkLiteral "#${config.stylix.base16Scheme.base0B}";
+            active = mkLiteral "#${config.stylix.base16Scheme.base08}";
             text-selected = mkLiteral "#${config.stylix.base16Scheme.base00}";
             text-color = mkLiteral "#${config.stylix.base16Scheme.base05}";
             border-color = mkLiteral "#${config.stylix.base16Scheme.base0F}";
@@ -65,7 +65,7 @@
               "dummy"
               "mode-switcher"
             ];
-            background-image = mkLiteral ''url("~/Pictures/Wallpapers/beautifulmountainscape.jpg", width)'';
+            background-image = mkLiteral ''url("~/zaneyos/config/wallpapers/Rest_on_green_station.png", width)'';
           };
           "entry" = {
             enabled = true;

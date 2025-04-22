@@ -1,4 +1,12 @@
 {
+  pkgs,
+  lib,
+  host,
+  config,
+  ...
+}:
+
+{
   programs.fastfetch = {
     enable = true;
 
@@ -11,7 +19,7 @@
       };
 
       logo = {
-        source = ./nixos.png;
+        source = ./nix.png;
         type = "kitty-direct";
         height = 15;
         width = 30;
@@ -50,7 +58,7 @@
           }
           {
               type = "custom";
-              format = " OS -> ZaneyOS 2.2";
+              format = " OS -> MoguchOS";
           }
           {
               type = "kernel";
@@ -68,10 +76,6 @@
           {
               type = "wm";
               key = " WM";
-          }
-          {
-              type = "wmtheme";
-              key = "│ ├󰉼 ";
           }
           {
               type = "terminal";
@@ -107,6 +111,7 @@
               format = "└────────────────────────────────────────────────────┘";
           }
           "break"
+          "colors"
       ];
     };
   };

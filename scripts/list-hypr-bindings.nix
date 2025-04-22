@@ -28,7 +28,7 @@ pkgs.writeShellScriptBin "list-hypr-bindings" ''
   " + D" "Launch Discord" "discord" \
   " + O" "Launch OBS" "obs" \
   " + G" "Launch GIMP" "gimp" \
-  " + N" "Launch New File Browser Window" "thunar" \
+  " + T" "Launch New File Browser Window" "thunar" \
   " + M" "Launch Spotify" "spotify" \
   " + P" "Pseudo Tiling" "pseudo" \
   " + SHIFT + I" "Toggle Split Direction" "togglesplit" \

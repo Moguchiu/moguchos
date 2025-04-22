@@ -11,25 +11,26 @@ in
 {
   options.drivers.nvidia-prime = {
     enable = mkEnableOption "Enable Nvidia Prime Hybrid GPU Offload";
-    intelBusID = mkOption {
+    amdgpuBusID = mkOption {
       type = types.str;
-      default = "PCI:1:0:0";
+      default = "PCI:6:0:0";
     };
     nvidiaBusID = mkOption {
       type = types.str;
-      default = "PCI:0:2:0";
+      default = "PCI:1:0:0";
     };
   };
 
   config = mkIf cfg.enable {
     hardware.nvidia = {
       prime = {
-        offload = {
-          enable = true;
-          enableOffloadCmd = true;
-        };
+        sync.enable = true;
+        #offload = {
+        #enable = true;
+        #enableOffloadCmd = true;
+        #};
         # Make sure to use the correct Bus ID values for your system!
-        intelBusId = "${cfg.intelBusID}";
+        amdgpuBusId = "${cfg.amdgpuBusID}";
         nvidiaBusId = "${cfg.nvidiaBusID}";
       };
     };

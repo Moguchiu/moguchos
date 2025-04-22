@@ -23,10 +23,13 @@ with lib;
         modules-center = [ "hyprland/workspaces" ];
         modules-left = [
           "custom/startmenu"
-          "hyprland/window"
-          "pulseaudio"
+          #"hyprland/window"
+          "cava"
+          "pulseaudio" 
+          "backlight"
           "cpu"
           "memory"
+          "temperature"
           "idle_inhibitor"
         ];
         modules-right = [
@@ -34,16 +37,18 @@ with lib;
           "custom/notification"
           "custom/exit"
           "battery"
+          "network"
           "tray"
+          "hyprland/language"
           "clock"
         ];
 
         "hyprland/workspaces" = {
           format = "{name}";
           format-icons = {
-            default = " ";
-            active = " ";
-            urgent = " ";
+            default = "";
+            active = "";
+            urgent = "";
           };
           on-scroll-up = "hyprctl dispatch workspace e+1";
           on-scroll-down = "hyprctl dispatch workspace e-1";
@@ -52,14 +57,21 @@ with lib;
           format = if clock24h == true then '' {:L%H:%M}'' else '' {:L%I:%M %p}'';
           tooltip = true;
           tooltip-format = "<big>{:%A, %d.%B %Y }</big>\n<tt><small>{calendar}</small></tt>";
+          format-alt= "  {:%d/%m/%y}";          
         };
-        "hyprland/window" = {
-          max-length = 22;
-          separate-outputs = false;
-          rewrite = {
-            "" = " 🙈 No Windows? ";
-          };
-        };
+        #"hyprland/window" = {
+        #  max-length = 22;
+        #  separate-outputs = false;
+        #  rewrite = {
+        #    "" = " No Windows? ";
+        #  };
+        #};
+        "backlight" = {
+          format-icons = ["🌑" "🌒" "🌓" "🌔" "🌕"];
+          format = "{icon} {percent}%";
+          on-scroll-up = "brightnessctl set 5%+";
+          on-scroll-down = "brightnessctl set 5%-";
+         };
         "memory" = {
           interval = 5;
           format = " {}%";
@@ -70,10 +82,22 @@ with lib;
           format = " {usage:2}%";
           tooltip = true;
         };
-        "disk" = {
-          format = " {free}";
-          tooltip = true;
+        "temperature" = {
+         interval = 2;
+         tooltip = true;
+         thermal-zone = 2;
+         hwmon-path = ["/sys/class/hwmon/hwmon2/temp1_input" "/sys/class/thermal/thermal_zone0/temp" ];
+         critical-threshold = 82;
+         format-critical = "{icon} {temperatureC}°C";
+         format = "{icon} {temperatureC}°C";
+         format-icons = [""];
+         on-click-right = "kitty --override font_size=14 --title btop sh -c 'btop'";
         };
+        "hyprland/language" = {
+         format = "{}";
+         format-en = "US";
+         format-ru = "RU";
+        };        
         "network" = {
           format-icons = [
             "󰤯"
@@ -86,6 +110,7 @@ with lib;
           format-wifi = "{icon} {signalStrength}%";
           format-disconnected = "󰤮";
           tooltip = false;
+          on-click-right = "kitty --override font_size=14 --title nmtui sh -c 'nmtui'";
         };
         "tray" = {
           spacing = 12;
@@ -111,11 +136,45 @@ with lib;
             ];
           };
           on-click = "sleep 0.1 && pavucontrol";
+          #on-click-right = "rofi -modi 'audio:/home/moguch/moguchos/scripts/switch-audio-profile.sh' -show audio";
         };
         "custom/exit" = {
           tooltip = false;
           format = "";
           on-click = "sleep 0.1 && wlogout";
+        };
+        "cava" = {
+        framerate = 60;
+        autosens = 1;
+          #sensitivity = 20;
+        bars = 10;
+        lower_cutoff_freq = 50;
+        higher_cutoff_freq = 12000;
+        method = "pipewire";
+        hide_on_silence = false;
+        sleep_timer = 5;
+        source = "auto";
+        stereo = false;
+        reverse = false;
+        bar_delimiter = 0;
+        monstercat = true;
+        waves = true;
+        noise_reduction = 0.77;
+        input_delay = 2;
+        format-icons = [
+            "▁"
+            "▂"
+            "▃"
+            "▄"
+            "▅"
+            "▆"
+            "▇"
+            "█"
+          ];
+        
+        actions ={ 
+            on-click-right = "mode";
+          };
         };
         "custom/startmenu" = {
           tooltip = false;
@@ -175,8 +234,12 @@ with lib;
             "󰂂"
             "󰁹"
           ];
-          on-click = "";
-          tooltip = false;
+          #on-click = "";
+          interval = 5;
+          format-time = "{H}h{M}m";
+          tooltip = true;
+          tooltip-format = "{time}";
+         
         };
       }
     ];
@@ -205,7 +268,7 @@ with lib;
           margin: 0px 3px;
           border-radius: 16px;
           color: #${config.stylix.base16Scheme.base00};
-          background: linear-gradient(45deg, #${config.stylix.base16Scheme.base08}, #${config.stylix.base16Scheme.base0D});
+          background: #${config.stylix.base16Scheme.base0A};
           opacity: 0.5;
           transition: ${betterTransition};
         }
@@ -215,7 +278,7 @@ with lib;
           margin: 0px 3px;
           border-radius: 16px;
           color: #${config.stylix.base16Scheme.base00};
-          background: linear-gradient(45deg, #${config.stylix.base16Scheme.base08}, #${config.stylix.base16Scheme.base0D});
+          background: #${config.stylix.base16Scheme.base0A};
           transition: ${betterTransition};
           opacity: 1.0;
           min-width: 40px;
@@ -224,19 +287,20 @@ with lib;
           font-weight: bold;
           border-radius: 16px;
           color: #${config.stylix.base16Scheme.base00};
-          background: linear-gradient(45deg, #${config.stylix.base16Scheme.base08}, #${config.stylix.base16Scheme.base0D});
+          background: #${config.stylix.base16Scheme.base0B};
           opacity: 0.8;
           transition: ${betterTransition};
         }
         tooltip {
           background: #${config.stylix.base16Scheme.base00};
-          border: 1px solid #${config.stylix.base16Scheme.base08};
+          border: 1px solid #${config.stylix.base16Scheme.base0A};
           border-radius: 12px;
         }
         tooltip label {
-          color: #${config.stylix.base16Scheme.base08};
+          color: #${config.stylix.base16Scheme.base0A};
         }
-        #window, #pulseaudio, #cpu, #memory, #idle_inhibitor {
+        #window, #pulseaudio, #cpu, #memory, #idle_inhibitor, #temperature, 
+        #cava, #backlight {
           font-weight: bold;
           margin: 4px 0px;
           margin-left: 7px;
@@ -254,9 +318,9 @@ with lib;
           border-radius: 0px 0px 40px 0px;
         }
         #custom-hyprbindings, #network, #battery,
-        #custom-notification, #tray, #custom-exit {
+        #custom-notification, #tray, #custom-exit, #language {
           font-weight: bold;
-          background: #${config.stylix.base16Scheme.base0F};
+          background: #${config.stylix.base16Scheme.base04};
           color: #${config.stylix.base16Scheme.base00};
           margin: 4px 0px;
           margin-right: 7px;
@@ -265,8 +329,8 @@ with lib;
         }
         #clock {
           font-weight: bold;
-          color: #0D0E15;
-          background: linear-gradient(90deg, #${config.stylix.base16Scheme.base0E}, #${config.stylix.base16Scheme.base0C});
+          color: #${config.stylix.base16Scheme.base0B};
+          background: #${config.stylix.base16Scheme.base02};
           margin: 0px;
           padding: 0px 15px 0px 30px;
           border-radius: 0px 0px 0px 40px;
