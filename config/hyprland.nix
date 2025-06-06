@@ -21,128 +21,158 @@ with lib;
     enable = true;
     xwayland.enable = true;
     systemd.enable = true;
+    settings = {
+     # Name: END-4
+     # Credit: END-4 project https://github.com/end-4/dots-hyprland
+     animations = {
+      enabled = true;
+      bezier = [
+          "linear, 0, 0, 1, 1"
+          "md3_standard, 0.2, 0, 0, 1"
+          "md3_decel, 0.05, 0.7, 0.1, 1"
+          "md3_accel, 0.3, 0, 0.8, 0.15"
+          "overshot, 0.05, 0.9, 0.1, 1.1"
+          "crazyshot, 0.1, 1.5, 0.76, 0.92 "
+          "hyprnostretch, 0.05, 0.9, 0.1, 1.0"
+          "menu_decel, 0.1, 1, 0, 1"
+          "menu_accel, 0.38, 0.04, 1, 0.07"
+          "easeInOutCirc, 0.85, 0, 0.15, 1"
+          "easeOutCirc, 0, 0.55, 0.45, 1"
+          "easeOutExpo, 0.16, 1, 0.3, 1"
+          "softAcDecel, 0.26, 0.26, 0.15, 1"
+          "md2, 0.4, 0, 0.2, 1 # use with .2s duration"
+      ];
+      animation = [
+         "windows, 1, 3, md3_decel, popin 60%"
+          "windowsIn, 1, 3, md3_decel, popin 60%"
+          "windowsOut, 1, 3, md3_accel, popin 60%"
+          "border, 1, 10, default"
+          "fade, 1, 3, md3_decel"
+          "layersIn, 1, 3, menu_decel, slide"
+          "layersOut, 1, 1.6, menu_accel"
+          "fadeLayersIn, 1, 2, menu_decel"
+          "fadeLayersOut, 1, 4.5, menu_accel"
+          "workspaces, 1, 7, menu_decel, slide"
+          ];
+      };
+      
+      env = [
+        "NIXOS_OZONE_WL,1"
+        "NIXPKGS_ALLOW_UNFREE,1"
+        "XDG_CURRENT_DESKTOP,Hyprland"
+        "XDG_SESSION_TYPE,wayland"
+        "XDG_SESSION_DESKTOP,Hyprland"
+        "GDK_BACKEND,wayland,x11"
+        "CLUTTER_BACKEND,wayland"
+        "QT_QPA_PLATFORM,wayland;xcb"
+        "QT_WAYLAND_DISABLE_WINDOWDECORATION,1"
+        "QT_AUTO_SCREEN_SCALE_FACTOR,1"
+        "SDL_VIDEODRIVER,x11"     
+        "MOZ_ENABLE_WAYLAND,1"
+        "LIBVA_DRIVER_NAME,nvidia"
+        "XDG_SESSION_TYPE,wayland" 
+        "__GLX_VENDOR_LIBRARY_NAME,nvidia"
+        "GBM_BACKEND nvidia-drm"
+      ];
+      
+      exec-once = [
+        "dbus-update-activation-environment --systemd --all"
+        "systemctl --user import-environment QT_QPA_PLATFORMTHEME WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+        "killall -q pypr;sleep 0.5 && pypr"
+        "killall -q waybar;sleep 0.5 && waybar"
+        "killall -q swaync;sleep 0.5 && swaync"          
+        "nm-applet --indicator"
+        "lxqt-policykit-agent"
+        "wl-paste --type text --watch cliphist store"
+        "wl-paste --type image --watch cliphist store" 
+        "wl-clip-persist --clipboard regular --display wayland-1"
+        "killall -q blueman-tray;sleep 3 && blueman-tray"
+       ];
+
+      general = {
+        gaps_in = 6;
+        gaps_out = 8;
+        border_size = 2;
+        layout = "dwindle";
+        resize_on_border = true;
+        "col.active_border" = "rgb(${config.stylix.base16Scheme.base0A}) rgb(${config.stylix.base16Scheme.base0C}) 45deg";
+        "col.inactive_border" = "rgb(${config.stylix.base16Scheme.base01})";
+       };
+       
+      input = {
+        kb_layout = "${keyboardLayout}";
+        kb_options = [
+        "grp:alt_shift_toggle"
+        ];
+        follow_mouse = 1;
+        touchpad = {
+          natural_scroll = true;
+          disable_while_typing = true;
+          scroll_factor = 0.8;
+          };
+        sensitivity = 0; # -1.0 - 1.0, 0 means no modification.
+        accel_profile = "flat";
+       };
+
+      gestures = {
+        workspace_swipe = true;
+        workspace_swipe_fingers = 3;
+      };
+ 
+      misc = {
+        initial_workspace_tracking = 0;
+        mouse_move_enables_dpms = true;
+        key_press_enables_dpms = false;
+        disable_hyprland_logo = true;
+        animate_manual_resizes = true;
+        new_window_takes_over_fullscreen = 1;
+        vfr = true;
+      };
+
+      decoration = {
+        rounding = 10;
+        shadow = {
+          enabled = false;
+          range = 4;
+          render_power = 3;
+          color = "rgba(1a1a1aee)";
+          };
+        blur = {
+          enabled = true;
+          size = 5;
+          passes = 3;
+          new_optimizations = true;
+          ignore_opacity = false
+            ;
+        };
+      };
+      
+      cursor = {
+        sync_gsettings_theme = true;
+        no_hardware_cursors = true;
+      };
+
+      dwindle = {
+        pseudotile = true;
+         preserve_split = true;
+      };
+     
+    };
     extraConfig =
       let
         modifier = "SUPER";
       in
       concatStrings [
         ''
-          env = GTK_USE_PORTAL, 1
-          env = NIXOS_OZONE_WL, 1
-          env = NIXPKGS_ALLOW_UNFREE, 1
-          env = XDG_CURRENT_DESKTOP, Hyprland
-          env = XDG_SESSION_TYPE, wayland
-          env = XDG_SESSION_DESKTOP, Hyprland
-          env = GDK_BACKEND, wayland, x11
-          env = CLUTTER_BACKEND, wayland
-          env = QT_QPA_PLATFORM=wayland;xcb
-          env = QT_WAYLAND_DISABLE_WINDOWDECORATION, 1
-          env = QT_AUTO_SCREEN_SCALE_FACTOR, 1
-          env = SDL_VIDEODRIVER, x11
-          env = MOZ_ENABLE_WAYLAND, 1
-          env = LIBVA_DRIVER_NAME, nvidia
-          env = XDG_SESSION_TYPE, wayland  
-          env = __GLX_VENDOR_LIBRARY_NAME, nvidia
-          env = GBM_BACKEND, nvidia-drm
-          exec-once = dbus-update-activation-environment --systemd --all
-          exec-once = systemctl --user import-environment QT_QPA_PLATFORMTHEME WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
-          exec-once = killall -q swww;sleep .5 && swww init
-          exec-once = killall -q waybar;sleep .5 && waybar
-          exec-once = killall -q swaync;sleep .5 && swaync          
-          exec-once = nm-applet --indicator
-          exec-once = lxqt-policykit-agent
-          exec-once = sleep 1.5 && swww img /home/${username}/Pictures/Wallpapers/Hollow_Emblem.png
-          exec-once = wl-paste --type text --watch cliphist store 
-          exec-once = wl-paste --type image --watch cliphist store 
-          exec-once = wl-clip-persist --clipboard regular --display wayland-1
-          
-          monitor =, preferred, auto, 1
+         monitor =, preferred, auto, 1
           ${extraMonitorSettings}
-          general {
-            gaps_in = 6
-            gaps_out = 8
-            border_size = 2
-            layout = dwindle
-            resize_on_border = true
-            col.active_border = rgb(${config.stylix.base16Scheme.base0A}) rgb(${config.stylix.base16Scheme.base0C}) 45deg
-            col.inactive_border = rgb(${config.stylix.base16Scheme.base01})
-          }
-          input {
-            kb_layout = ${keyboardLayout}
-            kb_options = grp:alt_shift_toggle
-            follow_mouse = 1
-            touchpad {
-              natural_scroll = true
-              disable_while_typing = true
-              scroll_factor = 0.8
-            }
-            sensitivity = 0 # -1.0 - 1.0, 0 means no modification.
-            accel_profile = flat
-          }
           windowrule = noborder, class:^(wofi)$
           windowrule = center, class:^(wofi)$
           windowrulev2 = opacity 0.9 0.7, class:^(thunar)$
           windowrulev2 = opacity 0.9 0.7, class:^(neovide)$
           windowrulev2 = opacity 0.9 0.7, class:^(vim)$
           windowrulev2 = opacity 0.9 0.7, class:^(${terminal})$
-          gestures {
-            workspace_swipe = true
-            workspace_swipe_fingers = 3
-          }
-          misc {
-            initial_workspace_tracking = 0
-            mouse_move_enables_dpms = true
-            key_press_enables_dpms = false
-            disable_hyprland_logo = true
-            animate_manual_resizes = true
-            new_window_takes_over_fullscreen = 1
-            
-          }
-          animations {
-            enabled = yes
-            bezier = wind, 0.05, 0.9, 0.1, 1.05
-            bezier = winIn, 0.1, 1.1, 0.1, 1.1
-            bezier = winOut, 0.3, -0.3, 0, 1
-            bezier = liner, 1, 1, 1, 1
-            animation = windows, 1, 6, wind, slide
-            animation = windowsIn, 1, 6, winIn, slide
-            animation = windowsOut, 1, 5, winOut, slide
-            animation = windowsMove, 1, 5, wind, slide
-            animation = border, 1, 1, liner
-            animation = fade, 1, 10, default
-            animation = workspaces, 1, 5, wind
-          }
-          decoration {
-            rounding = 10
-            shadow {
-                enabled = false
-                range = 4
-                render_power = 3
-                color = rgba(1a1a1aee)
-            }
-            blur {
-                enabled = true
-                size = 5
-                passes = 3
-                new_optimizations = on
-                ignore_opacity = off
-            }
-          }
-          
-          cursor {
-           sync_gsettings_theme = true
-           no_hardware_cursors = true
-          }
-
-          plugin {
-            hyprtrails {
-            }
-          }
-
-          dwindle {
-            pseudotile = true
-            preserve_split = true
-          }
+                    
           bind = ${modifier},Return,exec,${terminal}
           bind = ${modifier}SHIFT,Return,exec,rofi-launcher
           bind = ${modifier}SHIFT,W,exec,web-search

@@ -20,43 +20,53 @@ with lib;
       {
         layer = "top";
         position = "top";
-        modules-center = [ "hyprland/workspaces" ];
+        modules-center = [
+         "hyprland/workspaces"
+         
+        ];
         modules-left = [
-          "custom/startmenu"
-          #"hyprland/window"
+          #"custom/startmenu"
+          "clock"
+          "custom/exit"
           "cava"
           "pulseaudio" 
           "backlight"
-          "cpu"
-          "memory"
-          "temperature"
-          "idle_inhibitor"
+          "tray"
+          #"idle_inhibitor"
         ];
         modules-right = [
           "custom/hyprbindings"
-          "custom/notification"
-          "custom/exit"
+          "cpu"
+          "memory"
+          "temperature"
           "battery"
           "network"
-          "tray"
+          "custom/notification"
           "hyprland/language"
-          "clock"
+          
         ];
 
         "hyprland/workspaces" = {
-          format = "{name}";
+          format = "{icon}";
           format-icons = {
-            default = "";
-            active = "";
-            urgent = "";
-          };
+          "1" = "∇"; 
+          "2" = "∂"; 
+          "3" = "∮";  
+          "4" = "∑";  
+          "5" = "∝"; 
+          "6" = "∫";  
+          "7" = "⧉";  
+          "8" = "∬";  
+          "9" = "∪";  
+          "10" = "∀"; 
+        };
           on-scroll-up = "hyprctl dispatch workspace e+1";
           on-scroll-down = "hyprctl dispatch workspace e-1";
         };
         "clock" = {
           format = if clock24h == true then '' {:L%H:%M}'' else '' {:L%I:%M %p}'';
           tooltip = true;
-          tooltip-format = "<big>{:%A, %d.%B %Y }</big>\n<tt><small>{calendar}</small></tt>";
+          tooltip-format = "<tt><small>{calendar}</small></tt>";
           format-alt= "  {:%d/%m/%y}";          
         };
         #"hyprland/window" = {
@@ -135,8 +145,8 @@ with lib;
               ""
             ];
           };
-          on-click = "sleep 0.1 && pavucontrol";
-          #on-click-right = "rofi -modi 'audio:/home/moguch/moguchos/scripts/switch-audio-profile.sh' -show audio";
+          on-click = "sleep 0.1 && pypr toggle volume";
+          on-click-right = "sleep 0.1 && pypr toggle blueman";
         };
         "custom/exit" = {
           tooltip = false;
@@ -187,14 +197,14 @@ with lib;
           format = "󱕴";
           on-click = "sleep 0.1 && list-hypr-bindings";
         };
-        "idle_inhibitor" = {
-          format = "{icon}";
-          format-icons = {
-            activated = "";
-            deactivated = "";
-          };
-          tooltip = "true";
-        };
+        #"idle_inhibitor" = {
+        #  format = "{icon}";
+        #  format-icons = {
+        #    activated = "";
+        #    deactivated = "";
+        #  };
+        #  tooltip = "true";
+        #};
         "custom/notification" = {
           tooltip = false;
           format = "{icon} {}";
@@ -258,9 +268,9 @@ with lib;
         #workspaces {
           color: #${config.stylix.base16Scheme.base00};
           background: #${config.stylix.base16Scheme.base01};
-          margin: 4px 4px;
-          padding: 5px 5px;
-          border-radius: 16px;
+          margin: 0px 4px;
+          padding: 8px 5px;
+          border-radius: 0px 0px 16px 16px;
         }
         #workspaces button {
           font-weight: bold;
@@ -299,8 +309,8 @@ with lib;
         tooltip label {
           color: #${config.stylix.base16Scheme.base0A};
         }
-        #window, #pulseaudio, #cpu, #memory, #idle_inhibitor, #temperature, 
-        #cava, #backlight {
+        #clock, #window, #pulseaudio, #idle_inhibitor,
+        #cava, #backlight, #custom-exit, #tray {
           font-weight: bold;
           margin: 4px 0px;
           margin-left: 7px;
@@ -309,16 +319,16 @@ with lib;
           color: #${config.stylix.base16Scheme.base00};
           border-radius: 24px 10px 24px 10px;
         }
-        #custom-startmenu {
+        #costom {
+          font-weight: bold;
           color: #${config.stylix.base16Scheme.base0B};
           background: #${config.stylix.base16Scheme.base02};
-          font-size: 28px;
           margin: 0px;
           padding: 0px 30px 0px 15px;
           border-radius: 0px 0px 40px 0px;
         }
         #custom-hyprbindings, #network, #battery,
-        #custom-notification, #tray, #custom-exit, #language {
+        #custom-notification, #language, #cpu, #memory, #temperature {
           font-weight: bold;
           background: #${config.stylix.base16Scheme.base04};
           color: #${config.stylix.base16Scheme.base00};
@@ -327,8 +337,8 @@ with lib;
           border-radius: 10px 24px 10px 24px;
           padding: 0px 18px;
         }
-        #clock {
-          font-weight: bold;
+         #custom-startmenu {
+          font-size: 28px;
           color: #${config.stylix.base16Scheme.base0B};
           background: #${config.stylix.base16Scheme.base02};
           margin: 0px;
