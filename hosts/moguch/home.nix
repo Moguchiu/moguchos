@@ -27,8 +27,9 @@ in
     ../../config/waybar.nix
     ../../config/wlogout.nix
     ../../config/zsh/default.nix
-    #../../config/hyprpanel.nix
-  ];
+    ../../config/pyprland.nix
+    
+   ];
 
   # Place Files Inside Home Directory
   home.file."Pictures/Wallpapers" = {
@@ -127,7 +128,22 @@ in
    ];
 
   services = {
-  
+    
+    hyprpaper = {
+     enable = true;
+     settings = {
+      ipc = "on";
+      splash = false;
+      splash_offset = 2.0;
+      preload = [
+        "~/moguchos/config/wallpapers/Hollow_Emblem.png"
+        ];
+      wallpaper = [
+        " ,~/moguchos/config/wallpapers/Hollow_Emblem.png"
+        ];
+  };
+};
+
   };
 
   programs = {
@@ -158,30 +174,6 @@ in
             enable = true;
             package = pkgs.starship;
      };
-    bash = {
-      enable = false;
-      enableCompletion = false;
-      profileExtra = ''
-        #if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
-        #  exec Hyprland
-        #fi
-      '';
-      initExtra = ''
-        fastfetch
-        if [ -f $HOME/.bashrc-personal ]; then
-          source $HOME/.bashrc-personal
-        fi
-      '';
-      shellAliases = {
-        sv = "sudo nvim";
-        v = "nvim";
-        cat = "bat";
-        ls = "eza --icons";
-        ll = "eza -lh --icons --grid --group-directories-first";
-        la = "eza -lah --icons --grid --group-directories-first";
-        ".." = "cd ..";
-      };
-    };
-    home-manager.enable = true;
+     home-manager.enable = true;
    };
 }

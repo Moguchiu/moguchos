@@ -65,7 +65,7 @@
               "dummy"
               "mode-switcher"
             ];
-            background-image = mkLiteral ''url("~/zaneyos/config/wallpapers/Rest_on_green_station.png", width)'';
+            background-image = mkLiteral ''url("~/moguchos/config/wallpapers/Rest_on_green_station.png", width)'';
           };
           "entry" = {
             enabled = true;

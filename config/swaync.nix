@@ -3,13 +3,12 @@
 {
   home.file.".config/swaync/config.json".text = ''
     {
-      "$schema": "/etc/xdg/swaync/configSchema.json",
       "positionX": "right",
       "positionY": "top",
-      "control-center-margin-top": 10,
-      "control-center-margin-bottom": 10,
-      "control-center-margin-right": 10,
-      "control-center-margin-left": 10,
+      "control-center-margin-top": 30,
+      "control-center-margin-bottom": 30,
+      "control-center-margin-right": 30,
+      "control-center-margin-left": 30,
       "notification-icon-size": 64,
       "notification-body-image-height": 100,
       "notification-body-image-width": 200,
@@ -29,8 +28,6 @@
       "widgets": [
         "title",
         "mpris",
-        "volume",
-        "backlight",
         "dnd",
         "notifications"
       ],
@@ -50,13 +47,7 @@
         "mpris": {
           "image-size": 96,
           "image-radius": 7
-        },
-        "volume": {
-          "label": "󰕾"
-        },
-        "backlight": {
-          "label": "󰃟"
-        },
+        }
       }
     }
   '';
@@ -281,32 +272,6 @@
     .topbar-buttons>button {
       border: none;
       background: transparent
-    }
-    .widget-volume {
-      background: #${config.stylix.base16Scheme.base01};
-      padding: 5px;
-      margin: 10px 10px 5px 10px;
-      border-radius: 5px;
-      font-size: x-large;
-      color: #${config.stylix.base16Scheme.base05};
-    }
-    .widget-volume>box>button {
-      background: #${config.stylix.base16Scheme.base0B};
-      border: none
-    }
-    .per-app-volume {
-      background-color: #${config.stylix.base16Scheme.base00};
-      padding: 4px 8px 8px;
-      margin: 0 8px 8px;
-      border-radius: 5px;
-    }
-    .widget-backlight {
-      background: #${config.stylix.base16Scheme.base01};
-      padding: 5px;
-      margin: 10px 10px 5px 10px;
-      border-radius: 5px;
-      font-size: x-large;
-      color: #${config.stylix.base16Scheme.base05}
     }
   '';
 }

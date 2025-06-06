@@ -1,6 +1,6 @@
 {
   # Git Configuration ( For Pulling Software Repos )
-  gitUsername = "Moguch";
+  gitUsername = "moguch";
   gitEmail = "vovaa.assasin@gmail.com";
 
   # Hyprland Settings

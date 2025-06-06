@@ -4,10 +4,16 @@
   host,
   username,
   options,
+  lib,
   ...
 }:
 let
   inherit (import ./variables.nix) keyboardLayout locale localeT browser;
+  myPortals = [
+    pkgs.xdg-desktop-portal-gtk
+    pkgs.xdg-desktop-portal-wlr
+    pkgs.xdg-desktop-portal-hyprland
+  ];
 in
 {
   imports = [
@@ -26,56 +32,13 @@ in
     #kernelPackages = pkgs.linuxPackages_zen;
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
-      #"amdgpu.sg_display=0"
-      #"amdgpu.backlight=0"
-      #"nvidia-drm.fbdev=1"
-      #"nvidia-drm.modeset=1"    
-      #"libata.noacpi=1" 
-      #"acpi_backlight=native"
-      #"acpi_backlight=none"
-      #"nvidia.blacklight=0"
-      #"acpi_backlight=vendor"
-      #"acpi_osi=linux"
-      #"acpi=noirq"
-      #"acpi_backlight=amdgpu_wmi_ec"  
-      #"acpi_enforce_resources=lax"
       "acpi_backlight=nvidia_wmi_ec_backlight"
-      #"systemd.mask=systemd-vconsole-setup.service" #отключение какой-то настройки терминала
       "systemd.mask=dev-tpmrm0.device" #this is to mask that stupid 1.5 mins systemd bug
       "nowatchdog" 
       "modprobe.blacklist=sp5100_tco" #nowatchdog for AMD
-     
-      # Для AMD CPU
-      "amd_pstate=active"
-      "initcall_blacklist=acpi_cpufreq_init"
-    ];
+     ];
 
-    # Modules
-    blacklistedKernelModules = [ 
-      "ideapad_laptop"
-    ];
-    #kernelModules = [ 
-      #"lenovo-legion-module"
-      #"amdgpu"
-      #"nvidia"
-      #"nvidia_modeset" 
-      #"nvidia_uvm" 
-      #"nvidia_drm"
-      #"acpi_call"
-      #"v4l2loopback" 
-    #];
-    #extraModulePackages = 
-      #with config.boot.kernelPackages; 
-      #[
-      #lenovo-legion-module
-      #v4l2loopback 
-      #acpi_call     
-    #];
-    # Needed For Some Steam Games
-      #kernel.sysctl = {
-      #"vm.max_map_count" = 2147483642;
-    #};
-    # Bootloader.
+      # Bootloader.
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
     # Make /tmp a tmpfs
@@ -97,7 +60,8 @@ in
     
   #Power-profile
   services.power-profiles-daemon.enable = false;
-
+  #powerManagement.enable = true;
+  
   #tlp
   services.tlp = {
       enable = true;
@@ -108,9 +72,6 @@ in
       
        PLATFORM_PROFILE_ON_AC = "performance";
        PLATFORM_PROFILE_ON_BAT = "balance";
-
-      #CPU_SCALING_GOVERNOR_ON_AC = "performance";
-      #CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
 
       CPU_ENERGY_PERF_POLICY_ON_BAT = "default";
       CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
@@ -207,7 +168,7 @@ in
     };
 
   # Extra Module Options
-  #drivers.amdgpu.enable = false;
+  drivers.amdgpu.enable = false;
   drivers.nvidia.enable = true;
   drivers.nvidia-prime = {
     enable = true;
@@ -222,6 +183,9 @@ in
   networking.networkmanager.enable = true;
   networking.hostName = host;
   networking.timeServers = options.networking.timeServers.default ++ [ "pool.ntp.org" ];
+
+  # Wi-Fi и прошивки
+  hardware.enableRedistributableFirmware = true;
 
   # Set your time zone.
   time.timeZone = "Europe/Minsk";
@@ -244,7 +208,7 @@ in
   programs = {
     firefox.enable = true;
     starship = {
-      enable = true;
+      enable = false;
       settings = {
         add_newline = false;
         buf = {
@@ -361,20 +325,25 @@ in
     lolcat                     # Радужный вывод текста
     htop                       # Мониторинг ресурсов
     yazi                       # Современный терминальный файловый менеджер
+    neohtop                    # Мониторинг системы
 
     # 🌐 Браузеры и интернет
-    brave                      # Браузер Brave
-    (vivaldi.overrideAttrs (oldAttrs: {
-      enableWidevine = false;
-      proprietaryCodecs = true;
-      dontWrapQtApps = false;
-      dontPatchELF = true;
-      nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [pkgs.kdePackages.wrapQtAppsHook];
-    }))                        # Браузер Vivaldi с поддержкой кодеков
-    vivaldi-ffmpeg-codecs      # Видеокодеки для Vivaldi
+    #brave                      # Браузер Brave
+    (vivaldi.override {
+     proprietaryCodecs = true;    # Включает проприетарные кодеки
+     enableWidevine = true;       # DRM-поддержка (Netflix, Spotify)
+     
+     commandLineArgs = [
+      "--enable-features=UseOzonePlatform"
+      "--ozone-platform=wayland"
+      "--gtk-version=4"
+      ];
+    })
+    vivaldi-ffmpeg-codecs
+    
 
     # 🧰 Системные утилиты
-    #xdg-utils                 # Приложения по умолчанию 
+    xdg-utils                 # Приложения по умолчанию 
     lm_sensors                 # Мониторинг температуры и сенсоров
     unzip                      # Распаковка .zip
     unrar                      # Распаковка .rar
@@ -390,6 +359,7 @@ in
     bat                        # Улучшенный `cat` с подсветкой синтаксиса
     tree                       # Древовидный вывод директорий
     cowsay                     # Корова говорит
+    
 
     # ⚙️ Dev Tools
     pkg-config                 # Утилита для поиска флагов компиляции
@@ -408,23 +378,30 @@ in
     hyprpicker                 # Утилита для выбора цвета под Hyprland
     grim                       # Скриншоты
     slurp                      # Выбор области экрана
-    swww                       # Анимированная смена обоев
+    #swww                       # Анимированная смена обоев
     file-roller                # Графический архиватор
     imv                        # Просмотр изображений
     mpv                        # Медиаплеер
     pavucontrol                # Графическое управление звуком (PulseAudio)
     greetd.tuigreet            # Консольный логин-менеджер
+    #pyprland                   # Hyprland улучшения
 
     # 🎮 Игры и графика
     gimp                       # Редактор изображений
     krita                      # Графический редактор
     qbittorrent                # Торрент-клиент
     calibre                    # Чтение и организация e-book
+    pandoc                     # Конвертация документов
+    focuswriter                # Фокусированное письмо
+    typora                     # Ещё один текстовый редактор
+    zettlr                     # Текстовый редактор
+    obsidian                   # Система для управления связанными заметками
     (blender.override ({ cudaSupport = true; })) # Blender с поддержкой CUDA
     heroic                     # Установщик Epic/GoG игр
     protontricks               # Утилиты для Proton
     lutris-free                # Менеджер игр под Linux
-    discord                    #
+    discord
+    vesktop                    # discord launcher
     onlyoffice-desktopeditors  # офисный пакет
     telegram-desktop           # Десктопный Telegram-клиент.
     upscayl                    # Апскейлер изображений на основе ИИ
@@ -438,34 +415,40 @@ in
     wireplumber                # Session manager для PipeWire
     bluez-alsa                 # Bluetooth с поддержкой ALSA
     bluez-tools                # Bluetooth-утилиты
-    blueman                   # GUI для Bluetooth
+    blueman                    # GUI для Bluetooth
+    playerctl                  # Управление плеерами
+    spotify
 
     # 🖥️ Виртуализация
     libvirt                    # Фреймворк виртуализации
     virt-viewer                # Просмотр виртуальных машин
 
-    # 🐍 Python и научные пакеты
-    python313                  # Python 3.13
-    python313Packages.pip      # pip для 3.13
-    python313Packages.virtualenv # Виртуальные окружения
-    python313Packages.manim    # Анимации в математике
-    manim                      # Manim CLI
-    texlive.combined.scheme-full # LaTeX-пакеты (полный набор)
+    #🐍 Програмирование ИИ и всё такое
+    #python313                  # Python 3.13
+    #python313Packages.pip      # pip для 3.13
+    #python313Packages.virtualenv # Виртуальные окружения
+    #python313Packages.manim    # Анимации в математике
+    #manim                      # Manim CLI
+    #texlive.combined.scheme-full # LaTeX-пакеты (полный набор)
+    (alpaca.override ({
+     ollama = pkgs.ollama-cuda;
+      }))                           # Gui для LLM
+
 
     # 🧠 IDE и редакторы
     neovide                    # GUI для Neovim
-    (vscode-with-extensions.override {
-      vscodeExtensions = with vscode-extensions; [
-        ms-python.python
-        ms-azuretools.vscode-docker
-        ms-toolsai.jupyter
-      ];
-    })                         # VSCode с расширениями
+      # (vscode-with-extensions.override {
+      #  vscodeExtensions = with vscode-extensions; [
+      #   ms-python.python
+      #   ms-azuretools.vscode-docker
+      #    ms-toolsai.jupyter
+    # ];
+    #  })                         # VSCode с расширениями
 
     # 🖥️ Мониторинг и прочее
     nvidia-system-monitor-qt   # Мониторинг для NVIDIA
     inxi                       # Подробная инфа о системе
-    scarab                     # Лаунчер с TUI-интерфейсом
+    scarab                     # Лаунчер с TUI-интерфейсом для Hollow knight
     
   ];
 
@@ -481,20 +464,13 @@ in
   };
 
   # Extra Portal Configuration
-  xdg.portal = {
+   xdg.portal = {
     enable = true;
-    wlr.enable = true;
+    #wlr.enable = true;
+    #config.common.default = "*";
     xdgOpenUsePortal = true;
-    extraPortals = [
-      pkgs.xdg-desktop-portal-gtk
-      pkgs.xdg-desktop-portal
-      pkgs.xdg-desktop-portal-wlr
-    ];
-    configPackages = [
-      pkgs.xdg-desktop-portal-gtk
-      pkgs.xdg-desktop-portal-hyprland
-      pkgs.xdg-desktop-portal
-    ];
+    extraPortals = myPortals;
+    configPackages = myPortals;
   };
 
   
@@ -514,12 +490,8 @@ in
       vt = 3;
       settings = {
       default_session = {
-          # Wayland Desktop Manager is installed only for user ryan via home-manager!
       user = "${username}";
-          # .wayland-session is a script generated by home-manager, which links to the current wayland compositor(sway/hyprland or others).
-          # with such a vendor-no-locking script, we can switch to another wayland compositor without modifying greetd's config here.
-          #command = "$HOME/.wayland-session"; # start a wayland session directly without a login manager
-      command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd Hyprland"; # start Hyprland with a TUI login manager
+         command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd Hyprland"; # start Hyprland with a TUI login manager
       };
       };
     };
@@ -558,34 +530,22 @@ in
       alsa.support32Bit = true;
       pulse.enable = true;
       wireplumber.enable = true;
-      };
+      jack.enable = true;
+    };
 
     rpcbind.enable = false;
     nfs.server.enable = false;
     #Thunderbolt
     hardware.bolt.enable = true;
     
-    udev.extraRules = ''
-    SUBSYSTEM=="leds", KERNEL=="platform::kbd_backlight", ACTION=="add", RUN+="${pkgs.bash}/bin/bash -c 'echo 255 > /sys/class/leds/platform::kbd_backlight/brightness'"
-    '';
-
   };
-  #usnix
-    #musnix = {
-    #enable = true;
-    #kernel = {
-    #realtime = true;
-      #packages = pkgs.linuxPackages_latest_rt;
-      #};
-  #};
+  
+  #musnixix
+   musnix = {
+    enable = true;
+   };
 
-    #systemd.services.flatpak-repo = {
-    #path = [ pkgs.flatpak ];
-    #script = ''
-    #   flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-    #'';
-    #};
-  hardware.sane = {
+      hardware.sane = {
     enable = true;
     extraBackends = [ pkgs.sane-airscan ];
     disabledDefaultBackends = [ "escl" ];
@@ -601,49 +561,16 @@ in
     powerOnBoot = true;
    settings = {
     General = {
-      Experimental = true;  # Включаем экспериментальные функции
-      KernelExperimental = true;
-      FastConnectable = true;
+      Enable = "Source,Sink,Media,Socket";
+        Experimental = true;  # Включаем экспериментальные функции
+        KernelExperimental = true;
+        #FastConnectable = true;
+        AutoEnable = true;
     };
    };
-  # Оптимизация для современных кодеков
-  package = pkgs.bluez5-experimental;
-  disabledPlugins = ["sap"];  # Отключаем ненужные плагины
   };
   services.blueman.enable = true;
   
-   # Автоматическое переключение профилей
-  systemd.user.services.auto-a2dp = {
-   enable = true;
-   description = "Auto switch to A2DP profile";
-   serviceConfig = {
-    Type = "oneshot";
-    ExecStart = "${pkgs.bluez}/bin/bluetoothctl set-alias 'JBL Tune235NC TWS'";
-    ExecStartPost = "${pkgs.bluez}/bin/bluetoothctl set-profile-alias 'JBL Tune235NC TWS' a2dp-sink";
-   };
-   wantedBy = ["bluetooth.target"];
-  };
-
-  # Пользовательские правила Wireplumber
-  environment.etc."wireplumber/bluetooth.lua.d/51-jbl-autoprofile.lua".text = ''
-   rule = {
-    matches = {
-      {
-        { "device.name", "matches", "JBL_Tune235NC_TWS" },
-      },
-    },
-    apply_properties = {
-      ["bluez5.codecs"] = "[sbc aac ldac aptx aptx_hd]",
-      ["bluez5.auto-connect"] = "[hfp_hf hsp_hs a2dp_sink]",
-      ["bluez5.a2dp.aac-bitratemode"] = 2,  # VBR mode
-      ["bluez5.msbc-support"] = true,
-      ["bluez5.hsphf-backend"] = "none",
-      ["device.profile"] = "a2dp-sink"
-    }
-  }
-   table.insert(alsa_monitor.rules, rule)
-  '';
-
   # Enable sound with pipewire.
   #services.pulseaudio.enable = false;
   
@@ -651,28 +578,7 @@ in
   # Security / Polkit
   security.rtkit.enable = true;
   security.polkit.enable = true;
-  security.polkit.extraConfig = ''
-    polkit.addRule(function(action, subject) {
-      if (
-        subject.isInGroup("users")
-          && (
-            action.id == "org.freedesktop.login1.reboot" ||
-            action.id == "org.freedesktop.login1.reboot-multiple-sessions" ||
-            action.id == "org.freedesktop.login1.power-off" ||
-            action.id == "org.freedesktop.login1.power-off-multiple-sessions"
-          )
-        )
-      {
-        return polkit.Result.YES;
-      }
-    })
-  '';
-  security.pam.services.swaylock = {
-    text = ''
-      auth include login
-    '';
-  };
-
+  
   # Optimization settings and garbage collection automation
   nix = {
     settings = {
@@ -681,34 +587,6 @@ in
         "nix-command"
         "flakes"
       ];
-      #binaryCaches = [
-        #"https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
-        #"https://cache.nixos.org/"
-      # ];
-      # binaryCachePublicKeys = [
-        #"cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-      #];
-      substituters = [ 
-        #"https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
-        "https://hyprland.cachix.org"
-        "https://nix-community.cachix.org/"
-        #"https://chaotic-nyx.cachix.org/"
-        "https://cache.nixos.org/"
-        #"https://ags.cachix.org"
-        # garnix
-        #"https://cahe.garnix.io"
-        # proxied
-        #"https://nixos-cache-proxe.cofob.dev"
-      ];
-      trusted-public-keys = [ 
-        "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" 
-        #"cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-      ];
-    };
-    gc = {
-      automatic = false;
-      dates = "weekly";
-      options = "--delete-older-than 7d";
     };
   };
 
