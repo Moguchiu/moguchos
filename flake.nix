@@ -17,10 +17,10 @@
       url = "github:VonHeikemen/fine-cmdline.nvim";
       flake = false;
     };
-    pyprland = {
-      url = "github:hyprland-community/pyprland";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    #pyprland = {
+    #  url = "github:hyprland-community/pyprland";
+    #  inputs.nixpkgs.follows = "nixpkgs";
+    #};
     quickshell = {
       url = "git+https://git.outfoxxed.me/outfoxxed/quickshell";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -34,7 +34,7 @@
   outputs = { 
     nixpkgs,
     home-manager,
-    pyprland,
+    #pyprland,
     stylix,
     quickshell,
     durdraw,
@@ -58,7 +58,7 @@
             ./hosts/${host}/config.nix
             {
             environment.systemPackages = [ 
-              pyprland.packages."${system}".pyprland
+                #pyprland.packages."${system}".pyprland
               quickshell.packages."${system}".default
               durdraw.packages.${system}.default
             ];

@@ -28,7 +28,7 @@ in
     #../../config/waybar.nix
     #../../config/wlogout.nix
     ../../config/zsh/default.nix
-    ../../config/pyprland.nix
+    #../../config/pyprland.nix
     ../../config/rmpc.nix
   ];
 

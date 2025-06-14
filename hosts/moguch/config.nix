@@ -40,14 +40,14 @@ in
     kernelModules = [ 
       "v4l2loopback"
     ];
-    extraModprobeConfig = ''
-      options
-      v4l2loopback
-      devices=1
-      video_nr=1
-      card_label="OBS Cam"
-      exclusive_caps=1
-    '';
+      #extraModprobeConfig = ''
+      #  options
+      # v4l2loopback
+      # devices=1
+      #  video_nr=1
+      # card_label="OBS Cam"
+      #  exclusive_caps=1
+    #'';
       # Bootloader.
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
@@ -116,7 +116,7 @@ in
   # Styling Options
   stylix = {
     enable = true;
-    #image = ../../config/wallpapers/Hollow_Emblem.png;
+    image = ../../config/wallpapers/Hollow_Emblem.png;
        base16Scheme = {
        base00 = "1d2021"; # ----
        base01 = "3c3836"; # ---
@@ -429,7 +429,8 @@ in
     wireplumber                # Session manager для PipeWire
     bluez-alsa                 # Bluetooth с поддержкой ALSA
     bluez-tools                # Bluetooth-утилиты
-    blueman                    # GUI для Bluetooth
+    bluez
+    #blueman                    # GUI для Bluetooth
     playerctl                  # Управление плеерами
     spotify
     cava                       #Console AV Audio visualizer — выводит график спектра звука прямо в терминале, работает через PipeWire/ALSA.
