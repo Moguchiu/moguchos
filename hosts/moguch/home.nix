@@ -153,6 +153,33 @@ in
   };
 
   programs = {
+    superfile = {
+       enable = true;
+       settings = {
+        theme = "gruvbox-dark-hard";
+        default_sort_type = 0;
+        transparent_background = true;
+      };
+    };
+  obs-studio = {
+    enable = true;
+
+    # optional Nvidia hardware acceleration
+    package = (
+      pkgs.obs-studio.override {
+        cudaSupport = true;
+      }
+    );
+
+    plugins = with pkgs.obs-studio-plugins; [
+      wlrobs
+      obs-backgroundremoval
+      obs-pipewire-audio-capture
+      obs-vaapi #optional AMD hardware acceleration
+      obs-gstreamer
+      obs-vkcapture
+    ];
+  };
     gh.enable = true;
     btop = {
       enable = true;
