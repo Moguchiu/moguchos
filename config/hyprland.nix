@@ -70,6 +70,8 @@ with lib;
         "LIBVA_DRIVER_NAME,nvidia"
         "__GLX_VENDOR_LIBRARY_NAME,nvidia"
         "GBM_BACKEND, nvidia-drm"
+        "WLR_DRM_NO_ATOMIC,1"
+        "WLR_DRM_NO_MODIFIERS,1"
       ];
       
       exec-once = [
@@ -125,6 +127,7 @@ with lib;
         animate_manual_resizes = true;
         new_window_takes_over_fullscreen = 1;
         vfr = true;
+        
       };
 
       decoration = {
@@ -162,7 +165,7 @@ with lib;
       in
       concatStrings [
         ''
-         monitor =, preferred, auto, 1
+         monitor =,preferred,auto,1.0
           ${extraMonitorSettings}
           windowrule = noborder, class:^(wofi)$
           windowrule = center, class:^(wofi)$

@@ -40,14 +40,14 @@ in
     kernelModules = [ 
       "v4l2loopback"
     ];
-      #extraModprobeConfig = ''
-      #  options
-      # v4l2loopback
-      # devices=1
-      #  video_nr=1
-      # card_label="OBS Cam"
-      #  exclusive_caps=1
-    #'';
+    extraModprobeConfig = ''
+        options
+       v4l2loopback
+       devices=1
+       video_nr=1
+       card_label="OBS Cam"
+       exclusive_caps=1
+    '';
       # Bootloader.
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
@@ -373,6 +373,7 @@ in
     curl                       # Утилита для передачи данных по URL-адресам
     jq                         # JSON-парсер и трансформер, позволяет фильтровать и форматировать JSON прямо в терминале
     neofetch
+    wlr-randr                  # Смотреть "входы" монитора
 
     # ⚙️ Dev Tools
     pkg-config                 # Утилита для поиска флагов компиляции
