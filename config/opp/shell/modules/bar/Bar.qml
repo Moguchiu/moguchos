@@ -113,6 +113,15 @@ Item {
             }
         }
 
+    /*    Keyboard {
+            id: keyboard
+
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: clock.top
+            anchors.bottomMargin: Appearance.spacing.normal
+        }
+    */
+
         Clock {
             id: clock
 
@@ -135,7 +144,7 @@ Item {
 
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.bottom: parent.bottom
+            anchors.bottom: battery.top
             anchors.bottomMargin: Appearance.spacing.large
 
             radius: Appearance.rounding.full
@@ -149,5 +158,14 @@ Item {
                 anchors.centerIn: parent
             }
         }
-     }
+        BatteryInd {
+            id: battery
+
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom  
+            anchors.bottomMargin: Appearance.spacing.normal
+        }
+
+        
+  }
 }

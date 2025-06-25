@@ -21,42 +21,24 @@ Item {
     readonly property bool isOccupied: occupied[ws] ?? false
     readonly property bool hasWindows: isOccupied && BarConfig.workspaces.showWindows
 
-    property var icons: {
-    1: "∇",
-    2: "∂",
-    3: "∮",
-    4: "∑",
-    5: "∝",
-    6: "∫",
-    7: "⧉",
-    8: "∬",
-    9: "∪",
-    10: "∀"
-    }
-
     Layout.preferredWidth: childrenRect.width
     Layout.preferredHeight: size
 
     StyledText {
-    id: indicator
+        id: indicator
 
-    text: root.icons[root.ws] || root.ws
-    font.pointSize: Appearance.font.size.large
-    font.weight: Hyprland.activeWsId === root.ws
-        ? Font.Bold
-        : root.isOccupied ? Font.Normal : Font.Light
+        readonly property string label: BarConfig.workspaces.label || root.ws
+        readonly property string occupiedLabel: BarConfig.workspaces.occupiedLabel || label
+        readonly property string activeLabel: BarConfig.workspaces.activeLabel || (root.isOccupied ? occupiedLabel : label)
 
-    horizontalAlignment: StyledText.AlignHCenter
-    verticalAlignment: StyledText.AlignVCenter
+        animate: true
+        text: Hyprland.activeWsId === root.ws ? activeLabel : root.isOccupied ? occupiedLabel : label
+        color: BarConfig.workspaces.occupiedBg || root.isOccupied || Hyprland.activeWsId === root.ws ? Colours.palette.m3onSurface : Colours.palette.m3outlineVariant
+        horizontalAlignment: StyledText.AlignHCenter
+        verticalAlignment: StyledText.AlignVCenter
 
-    width: BarConfig.sizes.innerHeight
-    height: BarConfig.sizes.innerHeight
-
-    color: Hyprland.activeWsId === root.ws
-        ? Colours.palette.m3onSurface
-        : root.isOccupied
-            ? Colours.palette.m3onSurfaceVariant
-            : Colours.palette.m3outlineVariant
+        width: BarConfig.sizes.innerHeight
+        height: BarConfig.sizes.innerHeight
     }
 
     Loader {
@@ -89,7 +71,7 @@ Item {
                     required property Hyprland.Client modelData
 
                     text: Icons.getAppCategoryIcon(modelData.wmClass, "terminal")
-                    color: Colours.palette.m3outlineVariant
+                    color: Colours.palette.m3onSurfaceVariant
                 }
             }
         }

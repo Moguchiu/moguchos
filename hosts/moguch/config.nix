@@ -40,14 +40,14 @@ in
     kernelModules = [ 
       "v4l2loopback"
     ];
-    extraModprobeConfig = ''
-        options
-       v4l2loopback
-       devices=1
-       video_nr=1
-       card_label="OBS Cam"
-       exclusive_caps=1
-    '';
+      #extraModprobeConfig = ''
+      # options
+      # v4l2loopback
+      # devices=1
+      # video_nr=1
+      # card_label="OBS Cam"
+      # exclusive_caps=1
+    #'';
       # Bootloader.
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
@@ -336,7 +336,7 @@ in
     fish                       # Friendly Interactive SHell — альтернативная оболочка с удобным автодополнением, синтаксисом и поиском по истории.
     libpng
     gtk3
-                          # Клавиатура
+    #xkblayout-state                 # Клавиатура
 
     # 🌐 Браузеры и интернет
     #brave                      # Браузер Brave
@@ -416,7 +416,7 @@ in
     protontricks               # Утилиты для Proton
     lutris-free                # Менеджер игр под Linux
     discord
-    vesktop                    # discord launcher
+    #vesktop                    # discord launcher
     onlyoffice-desktopeditors  # офисный пакет
     telegram-desktop           # Десктопный Telegram-клиент.
     upscayl                    # Апскейлер изображений на основе ИИ
@@ -435,7 +435,7 @@ in
     playerctl                  # Управление плеерами
     spotify
     cava                       #Console AV Audio visualizer — выводит график спектра звука прямо в терминале, работает через PipeWire/ALSA.
-    
+    youtube-music              # Music
 
     # 🖥️ Виртуализация
     libvirt                    # Фреймворк виртуализации
@@ -514,6 +514,7 @@ in
   
   # Services to start
   services = {
+    upower.enable =true;
     dbus.enable = true;     # Simple interprocess messaging system
     seatd.enable = true;    # важно для wayland
     fwupd.enable = true;
@@ -597,12 +598,12 @@ in
     ["bluez5.enable-sbc-xq"] = true,
     ["bluez5.enable-msbc"] = true,
     ["bluez5.enable-hw-volume"] = true,
-    ["bluez5.enable-aac"] = true,
-    ["bluez5.enable-ldac"] = true,
+    ["bluez5.enable-aac"] = false,
+    ["bluez5.enable-ldac"] = false,
     ["bluez5.default.rate"] = 48000,
     ["bluez5.default.channels"] = 2,
     ["bluez5.profile"] = "a2dp-sink",
-    ["bluez5.codecs"] = { "aac", "ldac", "sbc", "sbc_xq" },
+    ["bluez5.codecs"] = {"sbc", "sbc_xq" },
   }
   '';
  

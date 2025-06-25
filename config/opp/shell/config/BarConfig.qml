@@ -23,5 +23,7 @@ Singleton {
         property bool showWindows: true
         property bool activeTrail: false
         property string label: "  "
-        }
+        property string occupiedLabel: "◢ "
+        property string activeLabel: "◣ "
+      }
 }
