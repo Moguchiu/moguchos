@@ -131,7 +131,7 @@ with lib;
       };
 
       decoration = {
-        rounding = 20;
+        rounding = 10;
         shadow = {
           enabled = false;
           range = 4;

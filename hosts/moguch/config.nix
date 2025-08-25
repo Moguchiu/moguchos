@@ -289,12 +289,18 @@ in
     };
     virt-manager.enable = true;
     #gamemode.enable = true;
-    steam = {
+    /*steam = {
       enable = true;
       gamescopeSession.enable = true;
       remotePlay.openFirewall = true;
       dedicatedServer.openFirewall = true;
       localNetworkGameTransfers.openFirewall = true; 
+    };*/
+    steam = {
+     enable = true;
+     remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+     dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+     localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
     };
     thunar = {
       enable = true;
@@ -323,8 +329,7 @@ in
     cmatrix                    # Анимация "Матрицы" в терминале
     lolcat                     # Радужный вывод текста
     htop                       # Мониторинг ресурсов
-    yazi                       # Современный терминальный файловый менеджер
-    #superfile                  # Файловый менеджер в терминале              
+    yazi                       # Современный терминальный файловый менеджер  
     neohtop                    # Мониторинг системы
     appimage-run               # Appimage
     file                       #
@@ -340,7 +345,7 @@ in
 
     # 🌐 Браузеры и интернет
     #brave                      # Браузер Brave
-    (vivaldi.override {
+    /*(vivaldi.override {
      proprietaryCodecs = true;    # Включает проприетарные кодеки
      enableWidevine = true;       # DRM-поддержка (Netflix, Spotify)
      
@@ -349,7 +354,8 @@ in
       "--ozone-platform=wayland"
       "--gtk-version=4"
       ];
-    })
+    })*/
+    vivaldi
     vivaldi-ffmpeg-codecs
     
 
@@ -527,7 +533,7 @@ in
     };
       greetd = {
       enable = true;
-      vt = 3;
+      #vt = 3;
       settings = {
         default_session = {
          user = "${username}";
@@ -593,17 +599,18 @@ in
   };
   services.blueman.enable = true;
   
-  environment.etc."wireplumber/bluetooth.lua.d/51-bluez-config.lua".text = ''
+ /*
+   environment.etc."wireplumber/bluetooth.lua.d/51-bluez-config.lua".text = ''
    bluez_monitor.properties = {
     ["bluez5.enable-sbc-xq"] = true,
     ["bluez5.enable-msbc"] = true,
     ["bluez5.enable-hw-volume"] = true,
-    ["bluez5.enable-aac"] = false,
-    ["bluez5.enable-ldac"] = false,
+    ["bluez5.enable-aac"] = true,
+    ["bluez5.enable-ldac"] = true,
     ["bluez5.default.rate"] = 48000,
     ["bluez5.default.channels"] = 2,
     ["bluez5.profile"] = "a2dp-sink",
-    ["bluez5.codecs"] = {"sbc", "sbc_xq" },
+    ["bluez5.codecs"] = {"sbc", "sbc_xq", "msbc", "aac", "lbac" },
   }
   '';
  
@@ -615,6 +622,7 @@ in
     ExecStart = "${pkgs.bash}/bin/bash -c '${pkgs.bluez}/bin/bluetoothctl connect 50:5E:5C:36:2C:7E && sleep 2 && ${pkgs.bluez}/bin/bluetoothctl select-transport a2dp-sink'";
    };
   }; 
+ */
 
   # Security / Polkit
   security.rtkit.enable = true;
