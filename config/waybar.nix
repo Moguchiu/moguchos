@@ -145,8 +145,8 @@ with lib;
               ""
             ];
           };
-          on-click = "sleep 0.1 && pypr toggle volume";
-          on-click-right = "sleep 0.1 && pypr toggle blueman";
+          on-click = "sleep 0.1 && pavucontrol";
+          on-click-right = "sleep 0.1 && blueman-manager";
         };
         "custom/exit" = {
           tooltip = false;

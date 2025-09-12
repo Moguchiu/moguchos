@@ -288,14 +288,6 @@ in
       enableSSHSupport = true;
     };
     virt-manager.enable = true;
-    #gamemode.enable = true;
-    /*steam = {
-      enable = true;
-      gamescopeSession.enable = true;
-      remotePlay.openFirewall = true;
-      dedicatedServer.openFirewall = true;
-      localNetworkGameTransfers.openFirewall = true; 
-    };*/
     steam = {
      enable = true;
      remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
@@ -330,7 +322,7 @@ in
     lolcat                     # Радужный вывод текста
     htop                       # Мониторинг ресурсов
     yazi                       # Современный терминальный файловый менеджер  
-    neohtop                    # Мониторинг системы
+    #neohtop                    # Мониторинг системы
     appimage-run               # Appimage
     file                       #
     squashfsTools              #
@@ -341,20 +333,8 @@ in
     fish                       # Friendly Interactive SHell — альтернативная оболочка с удобным автодополнением, синтаксисом и поиском по истории.
     libpng
     gtk3
-    #xkblayout-state                 # Клавиатура
-
+    
     # 🌐 Браузеры и интернет
-    #brave                      # Браузер Brave
-    /*(vivaldi.override {
-     proprietaryCodecs = true;    # Включает проприетарные кодеки
-     enableWidevine = true;       # DRM-поддержка (Netflix, Spotify)
-     
-     commandLineArgs = [
-      "--enable-features=UseOzonePlatform"
-      "--ozone-platform=wayland"
-      "--gtk-version=4"
-      ];
-    })*/
     vivaldi
     vivaldi-ffmpeg-codecs
     
@@ -391,7 +371,7 @@ in
     # 🎨 UI / Desktop утилиты
     lxqt.lxqt-policykit        # Политика авторизации LXQt (интеграция pkexec)
     yad                        # Утилита для диалоговых окон
-    #swaynotificationcenter     # Центр уведомлений для sway/hyprland
+    swaynotificationcenter     # Центр уведомлений для sway/hyprland
     brightnessctl              # Управление яркостью
     swappy                     # Утилита для скриншотов и аннотаций
     hyprpicker                 # Утилита для выбора цвета под Hyprland
@@ -402,7 +382,7 @@ in
     imv                        # Просмотр изображений
     mpv                        # Медиаплеер
     pavucontrol                # Графическое управление звуком (PulseAudio)
-    greetd.tuigreet            # Консольный логин-менеджер
+    tuigreet            # Консольный логин-менеджер
     ddcutil                    # Инструмент для чтения и управления параметрами монитора через DDC/CI (яркость, контрастность и другие настройки экранов).
     imagemagick                # Набор инструментов для конвертации, трансформации, аннотирования и генерации растровых изображений из командной строки.
     pastel                     # Цвет и всякие штуки с ним
@@ -434,9 +414,9 @@ in
     # 🔊 Аудио / Bluetooth
     pipewire                   # Современный звуковой сервер
     wireplumber                # Session manager для PipeWire
-    bluez-alsa                 # Bluetooth с поддержкой ALSA
-    bluez-tools                # Bluetooth-утилиты
-    bluez
+    #bluez-alsa                 # Bluetooth с поддержкой ALSA
+    #bluez-tools                # Bluetooth-утилиты
+    #bluez
     #blueman                    # GUI для Bluetooth
     playerctl                  # Управление плеерами
     spotify
@@ -448,19 +428,19 @@ in
     virt-viewer                # Просмотр виртуальных машин
 
     #🐍 Програмирование ИИ и всё такое
-    python313Packages.aubio     #Python-привязки к библиотеке Aubio для анализа аудио (распознавание темпа, частотный анализ и т.п.).
+    /*python313Packages.aubio     #Python-привязки к библиотеке Aubio для анализа аудио (распознавание темпа, частотный анализ и т.п.).
     python313Packages.pyaudio   #Python-модуль для работы с аудио: запись и воспроизведение через PortAudio.
     python313Packages.numpy     #	Библиотека для научных вычислений в Python: многомерные массивы, линейная алгебра, статистика и т.п.
-    #python313                  # Python 3.13
-    #python313Packages.pip      # pip для 3.13
-    #python313Packages.virtualenv # Виртуальные окружения
-    #python313Packages.manim    # Анимации в математике
-    #manim                      # Manim CLI
-    #texlive.combined.scheme-full # LaTeX-пакеты (полный набор)
-    #(alpaca.override ({
-    #ollama = pkgs.ollama-cuda;
-    # }))                           # Gui для LLM
-
+    python313                  # Python 3.13
+    python313Packages.pip      # pip для 3.13
+    python313Packages.virtualenv # Виртуальные окружения
+    python313Packages.manim    # Анимации в математике
+    manim                      # Manim CLI
+    texlive.combined.scheme-full # LaTeX-пакеты (полный набор)
+    (alpaca.override ({
+     ollama = pkgs.ollama-cuda;
+     }))                           # Gui для LLM
+    */
 
     # 🧠 IDE и редакторы
     neovide                    # GUI для Neovim
@@ -478,13 +458,16 @@ in
     scarab                     # Лаунчер с TUI-интерфейсом для Hollow knight
     
     # Icons
+    /*
     qlementine-icons           # Vector icon set for modern desktop Qt5/Qt6 applications
     kdePackages.qtstyleplugin-kvantum  #SVG-based Qt5 theme engine plus a config tool and extra themes
     haskellPackages.svg-icons         
-    
+    */
     qt6.qtwayland
     qt6.qt5compat
-    libsForQt5.qt5ct
+    #libsForQt5.qt5ct
+    glibc
+    gccNGPackages_15.libstdcxx
   ];
 
   fonts = {
@@ -537,7 +520,7 @@ in
       settings = {
         default_session = {
          user = "${username}";
-         command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd Hyprland"; # start Hyprland with a TUI login manager
+         command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd Hyprland"; # start Hyprland with a TUI login manager
       };
       };
     };
@@ -598,32 +581,7 @@ in
    };
   };
   services.blueman.enable = true;
-  
- /*
-   environment.etc."wireplumber/bluetooth.lua.d/51-bluez-config.lua".text = ''
-   bluez_monitor.properties = {
-    ["bluez5.enable-sbc-xq"] = true,
-    ["bluez5.enable-msbc"] = true,
-    ["bluez5.enable-hw-volume"] = true,
-    ["bluez5.enable-aac"] = true,
-    ["bluez5.enable-ldac"] = true,
-    ["bluez5.default.rate"] = 48000,
-    ["bluez5.default.channels"] = 2,
-    ["bluez5.profile"] = "a2dp-sink",
-    ["bluez5.codecs"] = {"sbc", "sbc_xq", "msbc", "aac", "lbac" },
-  }
-  '';
  
-  systemd.user.services.bluetooth-autoconnect = {
-  description = "Auto-connect Bluetooth headset with A2DP";
-  wantedBy = [ "default.target" ];
-  serviceConfig = {
-    Type = "oneshot";
-    ExecStart = "${pkgs.bash}/bin/bash -c '${pkgs.bluez}/bin/bluetoothctl connect 50:5E:5C:36:2C:7E && sleep 2 && ${pkgs.bluez}/bin/bluetoothctl select-transport a2dp-sink'";
-   };
-  }; 
- */
-
   # Security / Polkit
   security.rtkit.enable = true;
   security.polkit.enable = true;
