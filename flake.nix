@@ -29,6 +29,17 @@
       url = "github:scottmckendry/durdraw/nix-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    /*hyprpanel = {
+      url = "github:Jas-SinghFSU/HyprPanel";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };*/
+    zen-browser = {
+      url = "github:0xc000022070/zen-browser-flake/beta";
+      # IMPORTANT: we're using "libgbm" and is only available in unstable so ensure
+      # to have it up-to-date or simply don't specify the nixpkgs input
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
 
   outputs = { 
@@ -38,6 +49,7 @@
     stylix,
     quickshell,
     durdraw,
+    #zen-browser,
     ... 
     }@inputs:
     let
@@ -61,10 +73,12 @@
                 #pyprland.packages."${system}".pyprland
               quickshell.packages."${system}".default
               durdraw.packages.${system}.default
+                #inputs.zen-browser.packages."${system}".default
             ];
             }  
             inputs.stylix.nixosModules.stylix
             home-manager.nixosModules.home-manager
+            
             {
               home-manager.extraSpecialArgs = {
                 inherit username;

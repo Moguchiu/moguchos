@@ -77,8 +77,8 @@ with lib;
       exec-once = [
         "dbus-update-activation-environment --systemd --all"
         "systemctl --user import-environment QT_QPA_PLATFORMTHEME WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
-        "killall -q pypr;sleep 0.5 && pypr"
-        "killall -q waybar;sleep 0.5 && waybar"
+        #"killall -q pypr;sleep 0.5 && pypr"
+        #"killall -q waybar;sleep 0.5 && waybar"
         "killall -q swaync;sleep 0.5 && swaync"          
         #"sleep 0.5 && kitty qs -p ~/moguchos/config/opp/shell"
         "nm-applet --indicator"
@@ -115,8 +115,8 @@ with lib;
        };
 
       gestures = {
-        workspace_swipe = true;
-        workspace_swipe_fingers = 3;
+        workspace = true;
+        #workspace_swipe_fingers = 3;
       };
  
       misc = {

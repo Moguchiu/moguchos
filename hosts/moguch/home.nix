@@ -30,6 +30,8 @@ in
     ../../config/zsh/default.nix
     #../../config/pyprland.nix
     ../../config/rmpc.nix
+    #../../config/hyprpanel.nix
+    ../../config/zen.nix
   ];
 
   # Place Files Inside Home Directory
@@ -80,6 +82,7 @@ in
   stylix.targets.waybar.enable = false;
   stylix.targets.rofi.enable = false;
   stylix.targets.hyprland.enable = false;
+  stylix.targets.zen-browser.enable = false;
   gtk = {
     iconTheme = {
       name = "Gruvbox-Plus-Dark";

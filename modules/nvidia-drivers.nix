@@ -14,7 +14,7 @@ in
   };
 
   config = mkIf cfg.enable {
-    services.xserver.videoDrivers = [ "amdgpu" "nvidia" ];
+    services.xserver.videoDrivers = [ "nvidia" ];
     
     #boot.kernelParams =
     #lib.optionals (lib.elem "nvidia" config.services.xserver.videoDrivers) [

@@ -167,8 +167,8 @@ in
    zramSwap = {
      enable = true;
      algorithm = "zstd";
-     memoryPercent = 50;
-    #priority = 999;
+     memoryPercent = 99;
+     priority = 100;
     };
 
   # Extra Module Options
@@ -360,6 +360,10 @@ in
     jq                         # JSON-парсер и трансформер, позволяет фильтровать и форматировать JSON прямо в терминале
     neofetch
     wlr-randr                  # Смотреть "входы" монитора
+    libgtop                    # Library that reads information about processes and the running system
+    dart-sass                  # Reference implementation of Sass, written in Dart
+    gtksourceview3 #Binding to the GtkSourceView library
+    libsoup_3                  #HTTP client/server library for GNOME
 
     # ⚙️ Dev Tools
     pkg-config                 # Утилита для поиска флагов компиляции
@@ -643,7 +647,7 @@ in
 	    libva
 		  libva-utils
       #Для AMD
-      amdvlk
+      #amdvlk
     ];
   };
 
