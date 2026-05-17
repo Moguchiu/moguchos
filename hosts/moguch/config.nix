@@ -10,6 +10,7 @@
 let
   inherit (import ./variables.nix) keyboardLayout locale localeT browser;
   myPortals = [
+    pkgs.xdg-desktop-portal
     pkgs.xdg-desktop-portal-gtk
     pkgs.xdg-desktop-portal-wlr
     pkgs.xdg-desktop-portal-hyprland
@@ -28,89 +29,70 @@ in
     # Kernel
     #kernelPackages = pkgs.linuxPackages_zen;
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [
-      "acpi_backlight=nvidia_wmi_ec_backlight"
-      "systemd.mask=dev-tpmrm0.device" #this is to mask that stupid 1.5 mins systemd bug
-      "nowatchdog" 
-      "modprobe.blacklist=sp5100_tco" #nowatchdog for AMD
-     ];
-    extraModulePackages = with config.boot.kernelPackages; [
-       v4l2loopback
-     ];
-    kernelModules = [ 
-      "v4l2loopback"
-    ];
-      #extraModprobeConfig = ''
-      # options
-      # v4l2loopback
-      # devices=1
-      # video_nr=1
-      # card_label="OBS Cam"
-      # exclusive_caps=1
-    #'';
-      # Bootloader.
+    #kernelPackages = pkgs.linuxPackages_6_16;
+    # Bootloader.
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
     # Appimage Support
-    binfmt.registrations.appimage = {
+    /*binfmt.registrations.appimage = {
       wrapInterpreterInShell = false;
       interpreter = "${pkgs.appimage-run}/bin/appimage-run";
       recognitionType = "magic";
       offset = 0;
       mask = ''\xff\xff\xff\xff\x00\x00\x00\x00\xff\xff\xff'';
       magicOrExtension = ''\x7fELF....AI\x02'';
-    };
+    };*/
+    supportedFilesystems = [ "fuse" ];
     plymouth.enable = true;
   };
     
-  #Power-profile
-  #aservices.power-profiles-daemon.enable = true;
-  #powerManagement.enable = true;
-  
+  #battery
+  powerManagement.enable = false;
   #tlp
-  services.tlp = {
-      enable = true;
+  services = {
+    power-profiles-daemon.enable = true;
+    
+    mullvad-vpn.enable = false;
+    /*openvpn.servers = {
+     protonVPN  = { config = '' config /home/moguch/moguchos/VPN/nl-free-14.protonvpn.udp.ovpn ''; };
+    };*/
+    
+    system76-scheduler = {
+     enable = true;
+     package = pkgs.system76-scheduler;
+     useStockConfig = true;
+    };
+
+    tlp = {
+      enable = false;
       settings = {
-       WIFI_PWR_ON_AC = "off";
-       WIFI_PWR_ON_BAT = "off";
-       WOL_DISABLE = "N";
-      
-       PLATFORM_PROFILE_ON_AC = "performance";
-       PLATFORM_PROFILE_ON_BAT = "balance";
+        
+        TLP_AUTO_SWITCH = 0;
+        TLP_DEFAULT_MODE= "BAL";
 
-      CPU_ENERGY_PERF_POLICY_ON_BAT = "default";
-      CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
-      
-       # Для интегрированной AMD GPU
-       RADEON_DPM_STATE_ON_AC = "performance";
-       RADEON_DPM_STATE_ON_BAT = "battery";
+        #WIFI_PWR_ON_AC= "off"; 
+        #WIFI_PWR_ON_BAT= "off";
+        #WOL_DISABLE = "N";
 
-       # Для NVIDIA
-       NVIDIA_DYNAMIC_POWER_MANAGEMENT = 1;
+        #PLATFORM_PROFILE_ON_AC = "balanced";
+        #PLATFORM_PROFILE_ON_BAT = "balanced";
 
-       CPU_MIN_PERF_ON_AC = 0;
-       CPU_MAX_PERF_ON_AC = 100;
-       CPU_MIN_PERF_ON_BAT = 0;
-       CPU_MAX_PERF_ON_BAT = 100;
-       
-       CPU_BOOST_ON_AC = 1;
-       CPU_BOOST_ON_BAT = 0;
-
-       RESTORE_DEVICE_STATE_ON_STARTUP = 0;
+        CPU_BOOST_ON_AC = 1;
+        CPU_BOOST_ON_BAT = 1;
 
        #Optional helps save long term battery health
-       STOP_CHARGE_THRESH_BAT0 = 1; 
+       STOP_CHARGE_THRESH_BAT1 = 1; 
 
       };
     };
-
+   };
    #Sleep
-   systemd.sleep.extraConfig = ''
-     AllowSuspend=no
-     AllowHibernation=no
-     AllowHybridSleep=no
-     AllowSuspendThenHibernate=no
-     '';
+   systemd.sleep.settings.Sleep = {
+     AllowSuspend = "no";
+     AllowHibernation = "no";
+     AllowHybridSleep = "no";
+     AllowSuspendThenHibernate= "no";
+     };
     
 
   # Styling Options
@@ -118,6 +100,7 @@ in
     enable = true;
     image = ../../config/wallpapers/Hollow_Emblem.png;
        base16Scheme = {
+     /* #Старое Gruvbox-dark
        base00 = "1d2021"; # ----
        base01 = "3c3836"; # ---
        base02 = "504945"; # --
@@ -134,6 +117,24 @@ in
        base0D = "83a598"; # blue
        base0E = "d3869b"; # purple
        base0F = "d65d0e"; # brown
+       */
+      #Gruvbox-material-dark-hard
+      base00 = "202020"; # bg
+      base01 = "2a2827"; # bg2
+      base02 = "504945"; # bg6
+      base03 = "5a524c"; # bg8
+      base04 = "bdae93"; # p-fg3
+      base05 = "ddc7a1"; # fg
+      base06 = "ebdbb2"; # p-fg1
+      base07 = "fbf1c7"; # p-fg0
+      base08 = "ea6962"; # red
+      base09 = "e78a4e"; # orange
+      base0A = "d8a657"; # yellow
+      base0B = "a9b665"; # green
+      base0C = "89b482"; # aqua/cyan
+      base0D = "7daea3"; # blue
+      base0E = "d3869b"; # purple
+      base0F = "bd6f3e"; # dim-orange
     };
     polarity = "dark";
     opacity.terminal = 0.8;
@@ -142,6 +143,8 @@ in
     cursor.size = 24;
     fonts = {
       monospace = {
+        #package = pkgs.noto-fonts;
+        #name = "Noto Font";
         package = pkgs.nerd-fonts.jetbrains-mono;
         #package = pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; };
         name = "JetBrainsMono Nerd Font Mono";
@@ -174,7 +177,7 @@ in
   # Extra Module Options
   drivers.nvidia.enable = true;
   drivers.nvidia-prime.enable = true;
-  local.hardware-clock.enable = true;
+  local.hardware-clock.enable = false;
 
   # Enable networking
   networking.networkmanager.enable = true;
@@ -190,30 +193,33 @@ in
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "${locale}";
     LC_IDENTIFICATION = "${locale}"; 
-    LC_MEASUREMENT = "${locale}";
-    LC_MONETARY = "${locale}";
+    LC_MEASUREMENT = "${localeT}";
+    LC_MONETARY = "${localeT}";
     LC_NAME = "${locale}";
-    LC_NUMERIC = "${locale}";
-    LC_PAPER = "${locale}";
-    LC_TELEPHONE = "${locale}";
+    LC_NUMERIC = "${localeT}";
+    LC_PAPER = "${localeT}";
+    LC_TELEPHONE = "${localeT}";
     LC_TIME = "${localeT}";
   };
 
   programs = {
-    nh = {
+   regreet.enable = false;
+   nh = {
     enable = true;
-    flake = "../../";
-  };
-    appimage = {
+    flake = "/home/moguch/moguchos";
+   };
+    /*appimage = {
       enable = true;
       binfmt = true;
+    };*/
+  hyprland = {
+    enable = true;
     };
-    hyprland.enable = true;
-    firefox.enable = true;
+    firefox.enable = false;
     starship = {
-      enable = false;
+      enable = true;
       settings = {
-        add_newline = false;
+        add_newline = true;
         buf = {
           symbol = " ";
         };
@@ -281,6 +287,7 @@ in
     };
     dconf.enable = true;
     seahorse.enable = true;
+    fuse.enable = true;
     fuse.userAllowOther = true;
     mtr.enable = true;
     gnupg.agent = {
@@ -289,14 +296,20 @@ in
     };
     virt-manager.enable = true;
     steam = {
-     enable = true;
-     remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-     dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-     localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
+      enable = true;
+      remotePlay.openFirewall = true;
+      dedicatedServer.openFirewall = false;
+      extest.enable = true;
+      fontPackages = with pkgs;[ 
+         nerd-fonts.jetbrains-mono 
+         ];
+      #gamescopeSession.enable = true;
+      #extraCompatPackages = [ pkgs.proton-ge-bin ];
     };
+    gamemode.enable = true;
     thunar = {
       enable = true;
-      plugins = with pkgs.xfce; [
+      plugins = with pkgs; [
         thunar-archive-plugin
         thunar-volman
       ];
@@ -320,26 +333,27 @@ in
     git                        # Система контроля версий
     cmatrix                    # Анимация "Матрицы" в терминале
     lolcat                     # Радужный вывод текста
-    htop                       # Мониторинг ресурсов
-    yazi                       # Современный терминальный файловый менеджер  
+    #htop                       # Мониторинг ресурсов
+    #yazi                       # Современный терминальный файловый менеджер  
     #neohtop                    # Мониторинг системы
     appimage-run               # Appimage
-    file                       #
-    squashfsTools              #
-    fuse3                      # Утилиты Appimage
-    icu                        #
-    zlib                       #
+    #file                       #
+    #squashfsTools              #
+    #fuse3                      # Утилиты Appimage
+    #icu                        #
+    #zlib                       #
     fd                         # Современная версия find
     fish                       # Friendly Interactive SHell — альтернативная оболочка с удобным автодополнением, синтаксисом и поиском по истории.
     libpng
     gtk3
     
     # 🌐 Браузеры и интернет
-    vivaldi
-    vivaldi-ffmpeg-codecs
+    #vivaldi
+    #vivaldi-ffmpeg-codecs
     
 
     # 🧰 Системные утилиты
+    
     xdg-utils                 # Приложения по умолчанию 
     lm_sensors                 # Мониторинг температуры и сенсоров
     unzip                      # Распаковка .zip
@@ -358,58 +372,92 @@ in
     cowsay                     # Корова говорит
     curl                       # Утилита для передачи данных по URL-адресам
     jq                         # JSON-парсер и трансформер, позволяет фильтровать и форматировать JSON прямо в терминале
-    neofetch
+    #neofetch
     wlr-randr                  # Смотреть "входы" монитора
     libgtop                    # Library that reads information about processes and the running system
     dart-sass                  # Reference implementation of Sass, written in Dart
     gtksourceview3 #Binding to the GtkSourceView library
     libsoup_3                  #HTTP client/server library for GNOME
-
+    dmidecode                  #Видеть модели железа
+    hyprshutdown               #Закрытие приложений и выход из hyprland
+    hyprcursor                 #Курсор Hyprland
+    quickshell                 # Для запуска всяких шелов и приложений на Qt
+    openvpn                    #Vpn connection
+    #openresolv                 # DNS что-то там..
+    #protonvpn-gui
+    mullvad-vpn
+ 
     # ⚙️ Dev Tools
     pkg-config                 # Утилита для поиска флагов компиляции
     meson                      # Система сборки
     ninja                      # Быстрая сборка
     jdk8                       # Java Development Kit 8
-    nixfmt-rfc-style           # Форматирование nix-кода
+    nixfmt                     # Форматирование nix-кода
+    ntfs3g                     # Поддержка NTFS штук
 
     # 🎨 UI / Desktop утилиты
-    lxqt.lxqt-policykit        # Политика авторизации LXQt (интеграция pkexec)
+    #lxqt.lxqt-policykit        # Политика авторизации LXQt (интеграция pkexec)
+    #bibata-cursors
+    hyprpolkitagent             # авторизация (polikit)
     yad                        # Утилита для диалоговых окон
-    swaynotificationcenter     # Центр уведомлений для sway/hyprland
+    #swaynotificationcenter     # Центр уведомлений для sway/hyprland
     brightnessctl              # Управление яркостью
     swappy                     # Утилита для скриншотов и аннотаций
     hyprpicker                 # Утилита для выбора цвета под Hyprland
     grim                       # Скриншоты
     slurp                      # Выбор области экрана
-    #swww                       # Анимированная смена обоев
+    #awww                       # Анимированная смена обоев
     file-roller                # Графический архиватор
     imv                        # Просмотр изображений
-    mpv                        # Медиаплеер
+    #mpv                        # Медиаплеер
     pavucontrol                # Графическое управление звуком (PulseAudio)
     tuigreet            # Консольный логин-менеджер
     ddcutil                    # Инструмент для чтения и управления параметрами монитора через DDC/CI (яркость, контрастность и другие настройки экранов).
     imagemagick                # Набор инструментов для конвертации, трансформации, аннотирования и генерации растровых изображений из командной строки.
     pastel                     # Цвет и всякие штуки с ним
-   
+    #ashell                     # Bar?
+    easyeffects
+
     # 🎮 Игры и графика
+    #r2modman                   # менеджер модов 
     gimp                       # Редактор изображений
-    krita                      # Графический редактор
+    #krita                      # Графический редактор
     qbittorrent                # Торрент-клиент
     calibre                    # Чтение и организация e-book
-    pandoc                     # Конвертация документов
-    focuswriter                # Фокусированное письмо
-    typora                     # Ещё один текстовый редактор
-    zettlr                     # Текстовый редактор
+    #pandoc                     # Конвертация документов
+    #focuswriter                # Фокусированное письмо
+    #typora                     # Ещё один текстовый редактор
+    #zettlr                     # Текстовый редактор
     obsidian                   # Система для управления связанными заметками
-    (blender.override ({ cudaSupport = true; })) # Blender с поддержкой CUDA
+    #(blender.override ({ cudaSupport = true; })) # Blender с поддержкой CUDA
+    (blender.override ({cudaSupport = true; }))
+    /*(wrapOBS { 
+      plugins = with obs-studio-plugins; [      
+        # Плагин для захвата экрана в Wayland
+        wlrobs
+        # Другие полезные плагины
+        obs-backgroundremoval
+        obs-pipewire-audio-capture
+        obs-vkcapture
+        obs-vaapi
+      ];
+    })*/
     heroic                     # Установщик Epic/GoG игр
     protontricks               # Утилиты для Proton
-    lutris-free                # Менеджер игр под Linux
+    winetricks
+    #lutris-free                # Менеджер игр под Linux
     discord
     #vesktop                    # discord launcher
     onlyoffice-desktopeditors  # офисный пакет
     telegram-desktop           # Десктопный Telegram-клиент.
     upscayl                    # Апскейлер изображений на основе ИИ
+    godot                      # движок
+    ryubing                    #Nintendo Switch emul
+    eden
+    tkmm                       #Totk modmanager
+    dolphin-emu                #Gamecube/Wii/Triforce emul
+    cemu                       #Wii U emul
+
 
     # 📎 Клипборд
     wl-clipboard               # Работа с Wayland буфером обмена
@@ -423,9 +471,9 @@ in
     #bluez
     #blueman                    # GUI для Bluetooth
     playerctl                  # Управление плеерами
-    spotify
-    cava                       #Console AV Audio visualizer — выводит график спектра звука прямо в терминале, работает через PipeWire/ALSA.
-    youtube-music              # Music
+    #spotify
+    #cava                       #Console AV Audio visualizer — выводит график спектра звука прямо в терминале, работает через PipeWire/ALSA.
+    #youtube-music              # Music
 
     # 🖥️ Виртуализация
     libvirt                    # Фреймворк виртуализации
@@ -459,7 +507,7 @@ in
     # 🖥️ Мониторинг и прочее
     nvidia-system-monitor-qt   # Мониторинг для NVIDIA
     inxi                       # Подробная инфа о системе
-    scarab                     # Лаунчер с TUI-интерфейсом для Hollow knight
+    #scarab                     # Лаунчер с TUI-интерфейсом для Hollow knight
     
     # Icons
     /*
@@ -469,6 +517,8 @@ in
     */
     qt6.qtwayland
     qt6.qt5compat
+    kdePackages.qtmultimedia
+    #libsForQt5.qt5.qtmultimedia
     #libsForQt5.qt5ct
     glibc
     gccNGPackages_15.libstdcxx
@@ -476,8 +526,11 @@ in
 
   fonts = {
     packages = with pkgs; [
-      noto-fonts-emoji
+      noto-fonts-color-emoji
       noto-fonts-cjk-sans
+      noto-fonts 
+      liberation_ttf 
+      dejavu_fonts 
       font-awesome
       material-symbols
       nerd-fonts.jetbrains-mono
@@ -507,27 +560,27 @@ in
   
   # Services to start
   services = {
-    upower.enable =true;
+    upower.enable = true;
     dbus.enable = true;     # Simple interprocess messaging system
     seatd.enable = true;    # важно для wayland
-    fwupd.enable = true;
-    xserver = {
-      enable = false;
-      xkb = {
-        layout = "${keyboardLayout},ru";
-        variant = "";
-        };
-    };
-      greetd = {
+    xserver.enable = false;
+    greetd = {
       enable = true;
-      #vt = 3;
+      useTextGreeter = true;
       settings = {
         default_session = {
          user = "${username}";
-         command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd Hyprland"; # start Hyprland with a TUI login manager
-      };
-      };
+         command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd start-hyprland"; # start Hyprland with a TUI login manager
+          };
+         };
     };
+    fwupd = {
+      enable = true;
+        #daemonSettings = {
+        #  DisableWatchdog = true;
+        #   ApproveRestart = "never";
+      #  };
+    };    
     smartd = {
       enable = true;
       autodetect = true;
@@ -538,18 +591,18 @@ in
     tumbler.enable = true;
     #flatpak.enable = false;
     printing = {
-      enable = true;
+      enable = false;
       drivers = [
         # pkgs.hplipWithPlugin
       ];
     };
-    gnome.gnome-keyring.enable = true;
+    #gnome.gnome-keyring.enable = true;
     avahi = {
-      enable = true;
+      enable = false;
       nssmdns4 = true;
       openFirewall = true;
     };
-    ipp-usb.enable = true;
+    ipp-usb.enable = false;
     pipewire = {
       enable = true;
       alsa.enable = true;
@@ -576,11 +629,12 @@ in
     powerOnBoot = true;
    settings = {
     General = {
-      Enable = "Source,Sink,Media,Socket";
         Experimental = true;  # Включаем экспериментальные функции
         KernelExperimental = true;
         FastConnectable = true;
-        AutoEnable = true;
+    };
+    Policy = {
+      AutoEnable = true;
     };
    };
   };
@@ -593,6 +647,13 @@ in
   # Optimization settings and garbage collection automation
   nix = {
     settings = {
+      substituters = [
+      "https://cache.nixos-cuda.org"
+      ];
+      trusted-public-keys = [
+      "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
+      ];
+
       auto-optimise-store = true;
       experimental-features = [
         "nix-command"
@@ -607,10 +668,10 @@ in
     stdenv.cc.cc icu glib zlib openssl expat systemd file xz
 
     # X11 / Wayland
-    libxkbcommon xorg.libX11 xorg.libxcb
-    xorg.libXcomposite xorg.libXtst xorg.libXrandr xorg.libXext
-    xorg.libXfixes xorg.libXinerama xorg.libXcursor xorg.libXrender
-    xorg.libXdamage xorg.libxshmfence xorg.libXxf86vm
+    libxkbcommon libX11 libxcb
+    libxcomposite libxtst libxrandr libxext
+    libxfixes libxinerama libxcursor libxrender
+    libxdamage libxshmfence libxxf86vm
     wayland wayland-protocols mesa libGL libGLU libva libvdpau
     pixman cairo freetype fontconfig pango gdk-pixbuf atk
 
@@ -620,14 +681,14 @@ in
 
     # SDL / Игры
     SDL SDL2 SDL_image SDL2_image SDL_ttf SDL2_ttf SDL_mixer SDL2_mixer
-    freeglut glew110 libjpeg libpng libsamplerate libmikmod libtheora
+    freeglut glew_1_10 libjpeg libpng libsamplerate libmikmod libtheora
     libtiff libcaca
 
     # GTK / Appindicator
     gtk3 gtk4 pango
 
     # Прочие утилиты
-    xorg.libXi xorg.libSM xorg.libICE libcap libusb1 libidn tbb nspr nss cups libudev0-shim
+    libxi libsm libice libcap libusb1 libidn tbb nspr nss cups libudev0-shim
   ];    
 
 
@@ -639,7 +700,7 @@ in
     enable32Bit = true;
     extraPackages = with pkgs; [ 
       nvidia-vaapi-driver
-      vaapiVdpau
+      libva-vdpau-driver
       libvdpau
       libvdpau-va-gl
       egl-wayland

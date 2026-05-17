@@ -21,6 +21,8 @@ with lib;
     enable = true;
     xwayland.enable = true;
     systemd.enable = true;
+    #package = null;
+    #portalPackage = null;
     settings = {
       animations = {
       enabled = true;
@@ -55,47 +57,57 @@ with lib;
       };
       
       env = [
-        "NIXOS_OZONE_WL,1"
-        "NIXPKGS_ALLOW_UNFREE,1"
-        "XDG_CURRENT_DESKTOP,Hyprland"
-        "XDG_SESSION_TYPE,wayland"
-        "XDG_SESSION_DESKTOP,Hyprland"
-        "GDK_BACKEND,wayland,x11"
-        "CLUTTER_BACKEND,wayland"
-        "QT_QPA_PLATFORM,wayland;xcb"
-        "QT_WAYLAND_DISABLE_WINDOWDECORATION,1"
-        "QT_AUTO_SCREEN_SCALE_FACTOR,1"
-        "SDL_VIDEODRIVER,x11"     
-        "MOZ_ENABLE_WAYLAND,1"
-        "LIBVA_DRIVER_NAME,nvidia"
-        "__GLX_VENDOR_LIBRARY_NAME,nvidia"
-        "GBM_BACKEND, nvidia-drm"
-        "WLR_DRM_NO_ATOMIC,1"
-        "WLR_DRM_NO_MODIFIERS,1"
+            
+        "NIXOS_OZONE_WL=1"
+        "NIXPKGS_ALLOW_UNFREE=1"
+        "XDG_CURRENT_DESKTOP=Hyprland"
+        "XDG_SESSION_TYPE=wayland"
+        "XDG_SESSION_DESKTOP=Hyprland"
+        "GDK_BACKEND=wayland,x11"
+        "CLUTTER_BACKEND=wayland"
+        "QT_QPA_PLATFORM=wayland;xcb"
+        "QT_WAYLAND_DISABLE_WINDOWDECORATION=1"
+        "QT_AUTO_SCREEN_SCALE_FACTOR=1"
+        "SDL_VIDEODRIVER=x11"
+        "MOZ_ENABLE_WAYLAND=1"
+        "LIBVA_DRIVER_NAME=nvidia"
+        "__GLX_VENDOR_LIBRARY_NAME=nvidia"
+        "GBM_BACKEND=nvidia-drm"
+        "WLR_DRM_NO_ATOMIC=1"
+        "WLR_DRM_NO_MODIFIERS=1"
+        #"XCURSOR_THEME=Bibata-Modern-Ice"
+        #"XCURSOR_SIZE=24"
+        #"HYPRCURSOR_THEME=Bibata-Modern-Ice"
+        #"HYPRCURSOR_SIZE=24 "
       ];
       
       exec-once = [
-        "dbus-update-activation-environment --systemd --all"
+       "hyprpaper"
+       "dbus-update-activation-environment --systemd --all"
         "systemctl --user import-environment QT_QPA_PLATFORMTHEME WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
         #"killall -q pypr;sleep 0.5 && pypr"
         #"killall -q waybar;sleep 0.5 && waybar"
-        "killall -q swaync;sleep 0.5 && swaync"          
+        #"killall -q swaync;sleep 0.5 && swaync"          
+        "killall -q dunst;sleep 0.5 && dunst"
         #"sleep 0.5 && kitty qs -p ~/moguchos/config/opp/shell"
         "nm-applet --indicator"
-        "lxqt-policykit-agent"
+        "systemctl --user start hyprpolkitagent"
         "wl-paste --type text --watch cliphist store"
         "wl-paste --type image --watch cliphist store" 
         "wl-clip-persist --clipboard regular --display wayland-1"
         "killall -q blueman-tray;sleep 1.5 && blueman-tray"
-       ];
+        ];
+    
+      
 
-      general = {
-        gaps_in = 6;
-        gaps_out = 10;
+
+     general = {
+        gaps_in = 2;
+        gaps_out = 0;
         border_size = 2;
         layout = "dwindle";
         resize_on_border = true;
-        "col.active_border" = "rgb(${config.stylix.base16Scheme.base0A}) rgb(${config.stylix.base16Scheme.base0C}) 45deg";
+        "col.active_border" = "rgb(${config.stylix.base16Scheme.base04})";
         "col.inactive_border" = "rgb(${config.stylix.base16Scheme.base01})";
        };
        
@@ -110,13 +122,12 @@ with lib;
           disable_while_typing = true;
           scroll_factor = 0.8;
           };
-        sensitivity = 0; # -1.0 - 1.0, 0 means no modification.
+        sensitivity = 0.4; # -1.0 - 1.0, 0 means no modification.
         accel_profile = "flat";
        };
 
       gestures = {
-        workspace = true;
-        #workspace_swipe_fingers = 3;
+        workspace_swipe_forever = true;
       };
  
       misc = {
@@ -125,13 +136,13 @@ with lib;
         key_press_enables_dpms = false;
         disable_hyprland_logo = true;
         animate_manual_resizes = true;
-        new_window_takes_over_fullscreen = 1;
+        #new_window_takes_over_fullscreen = 1;
         vfr = true;
         
       };
 
       decoration = {
-        rounding = 10;
+        rounding = 0;
         shadow = {
           enabled = false;
           range = 4;
@@ -156,8 +167,7 @@ with lib;
       dwindle = {
         pseudotile = true;
          preserve_split = true;
-      };
-     
+      };    
     };
     extraConfig =
       let
@@ -165,16 +175,25 @@ with lib;
       in
       concatStrings [
         ''
-         monitor =,preferred,auto,1.0
-          ${extraMonitorSettings}
-          windowrule = noborder, class:^(wofi)$
-          windowrule = center, class:^(wofi)$
-          windowrulev2 = opacity 0.9 0.7, class:^(thunar)$
-          windowrulev2 = opacity 0.9 0.7, class:^(neovide)$
-          windowrulev2 = opacity 0.9 0.7, class:^(vim)$
-          windowrulev2 = opacity 0.9 0.7, class:^(${terminal})$
-                    
-          bind = ${modifier},Return,exec,${terminal}
+        monitor =,preferred,auto,1.0
+        gesture = 3, horizontal, workspace
+        
+         ${extraMonitorSettings}
+           
+          windowrule = opacity 0.9 0.7 0.9, match:class thunar
+          windowrule = opacity 0.9 0.7 0.9, match:class neovide
+          windowrule = opacity 0.9 0.7 0.9, match:class ${terminal}
+          windowrule = center on, match:class wofi
+          windowrule = float on, match:class wofi       
+
+         bind = ${modifier},A, exec, [workspace 1 silent] ${terminal} btop
+         bind = ${modifier},A, exec, [workspace 2 silent] zen-beta
+         bind = ${modifier},A, exec, [workspace 3 silent] obsidian
+         bind = ${modifier},A, exec, [workspace 4 silent] Telegram
+         bind = ${modifier},A, exec, [workspace 4 silent] discord
+
+
+          bind = ${modifier},Return,exec,${terminal} 
           bind = ${modifier}SHIFT,Return,exec,rofi-launcher
           bind = ${modifier}SHIFT,W,exec,web-search
           bind = ${modifier}ALT,W,exec,wallsetter
@@ -253,7 +272,7 @@ with lib;
           bind = ,XF86AudioPrev, exec, playerctl previous
           bind = ,XF86MonBrightnessDown,exec,brightnessctl set 5%-
           bind = ,XF86MonBrightnessUp,exec,brightnessctl set +5%
-          ''
+         ''
       ];
   };
 }

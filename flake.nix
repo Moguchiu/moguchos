@@ -4,9 +4,12 @@
   inputs = {
     #nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
     #nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz";
+    #nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
-      url = "github:nix-community/home-manager/master";
+      #url = "github:nix-community/home-manager/release-25.05";
+      #url = "github:nix-community/home-manager/master";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     stylix = {
@@ -20,7 +23,7 @@
     /*pyprland = {
       url = "github:hyprland-community/pyprland";
       inputs.nixpkgs.follows = "nixpkgs";
-    };*/
+    };
     quickshell = {
       url = "git+https://git.outfoxxed.me/outfoxxed/quickshell";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -29,8 +32,12 @@
       url = "github:scottmckendry/durdraw/nix-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    /*hyprpanel = {
+    hyprpanel = {
       url = "github:Jas-SinghFSU/HyprPanel";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    hyprsettings = {
+      url = "github:wiktormalyska/hyprsettings-nixos";
       inputs.nixpkgs.follows = "nixpkgs";
     };*/
     zen-browser = {
@@ -47,8 +54,9 @@
     home-manager,
     #pyprland,
     stylix,
-    quickshell,
-    durdraw,
+    #quickshell,
+    #durdraw,
+    #hyprsettings,
     #zen-browser,
     ... 
     }@inputs:
@@ -71,15 +79,16 @@
             {
             environment.systemPackages = [ 
                 #pyprland.packages."${system}".pyprland
-              quickshell.packages."${system}".default
-              durdraw.packages.${system}.default
+                #quickshell.packages."${system}".default
+                #durdraw.packages.${system}.default
                 #inputs.zen-browser.packages."${system}".default
             ];
             }  
             inputs.stylix.nixosModules.stylix
             home-manager.nixosModules.home-manager
-            
+            #hyprsettings.nixosModules.default
             {
+              #programs.hyprsettings.enable = true;
               home-manager.extraSpecialArgs = {
                 inherit username;
                 inherit inputs;

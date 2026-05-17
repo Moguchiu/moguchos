@@ -13,7 +13,7 @@ in
   # Home Manager Settings
   home.username = "${username}";
   home.homeDirectory = "/home/${username}";
-  home.stateVersion = "23.11";
+  home.stateVersion = "26.05";
 
   # Import Program Configurations
   imports = [
@@ -24,12 +24,13 @@ in
     ../../config/rofi/rofi.nix
     ../../config/rofi/config-emoji.nix
     ../../config/rofi/config-long.nix
-    ../../config/swaync.nix
-    ../../config/waybar.nix
-    ../../config/wlogout.nix
+    #../../config/swaync.nix
+    ../../config/dunst.nix
+    #../../config/waybar.nix
+    #../../config/wlogout.nix
     ../../config/zsh/default.nix
     #../../config/pyprland.nix
-    ../../config/rmpc.nix
+    #../../config/rmpc.nix
     #../../config/hyprpanel.nix
     ../../config/zen.nix
   ];
@@ -59,8 +60,10 @@ in
   # Install & Configure Git
   programs.git = {
     enable = true;
-    userName = "${gitUsername}";
-    userEmail = "${gitEmail}";
+    settings = {
+      user.name = "${gitUsername}";
+      user.email = "${gitEmail}";
+    };
   };
 
   # Create XDG Dirs
@@ -134,29 +137,30 @@ in
     pkgs.eza          # Для алиасов
     pkgs.bat          # Для `cat = bat`
     pkgs.zoxide       # Для умного cd 
-      ];
+    #pkgs.calibre  
+    
+  ];
 
   services = {
     
-    hyprpaper = {
+   hyprpaper = {
      enable = true;
      settings = {
-      ipc = "on";
-      splash = false;
-      splash_offset = 2.0;
-      preload = [
-        "~/moguchos/config/wallpapers/Hollow_Emblem.png"
+        wallpaper = [ 
+         {
+          monitor = " ";
+          path = "~/moguchos/config/wallpapers/Hollow_Emblem.png";
+          fit_mode = "cover";
+         }
         ];
-      wallpaper = [
-        " ,~/moguchos/config/wallpapers/Hollow_Emblem.png"
-        ];
+     
+     };
   };
-};
 
   };
 
   programs = {
-    superfile = {
+     superfile = {
        enable = true;
        settings = {
         theme = "gruvbox-dark-hard";
@@ -178,7 +182,6 @@ in
       wlrobs
       obs-backgroundremoval
       obs-pipewire-audio-capture
-      wlrobs
       #obs-ndi
       waveform
       #obs-vaapi #optional AMD hardware acceleration
@@ -209,10 +212,19 @@ in
         inactive_tab_font_style bold
       '';
     };
-     starship = {
+    zellij= {
+      enable = false;
+      package = pkgs.zellij;
+      enableZshIntegration = true;
+      settings = {
+       theme = "gruvbox-dark";
+       show_startup_tips = false;
+      };
+    };
+     /*starship = {
             enable = true;
             package = pkgs.starship;
-     };
+     };*/
     
     home-manager.enable = true;
    };
