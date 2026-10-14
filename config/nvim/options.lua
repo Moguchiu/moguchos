@@ -1,4 +1,5 @@
 local opt = vim.opt
+vim.g.mapleader = " "
 opt.number = true
 opt.relativenumber = true
 opt.tabstop = 2
@@ -18,4 +19,4 @@ opt.clipboard:append("unnamedplus")
 opt.splitright = true
 opt.splitbelow = true
 opt.swapfile = false
-vim.g.mapleader = " "
+

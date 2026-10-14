@@ -15,11 +15,11 @@ in
       vimdiffAlias = true;
       withNodeJs = true;
       extraPackages = with pkgs; [
-        lua-language-server
-        gopls
+        #lua-language-server
+        #gopls
         xclip
         wl-clipboard
-        luajitPackages.lua-lsp
+        #luajitPackages.lua-lsp
         nil
         rust-analyzer
         #nodePackages.bash-language-server
@@ -35,7 +35,10 @@ in
         indent-blankline-nvim
         nui-nvim
         finecmdline
-        nvim-treesitter
+        (nvim-treesitter.withPlugins (p: with p; [
+         lua vim vimdoc bash python nix rust go yaml markdown markdown_inline
+         json toml
+        ] ))
         lualine-nvim
         nvim-autopairs
         nvim-web-devicons
@@ -44,6 +47,7 @@ in
         nvim-lspconfig
         cmp-nvim-lsp
         cmp-buffer
+        cmp-path
         luasnip
         cmp_luasnip
         friendly-snippets
@@ -57,10 +61,9 @@ in
         todo-comments-nvim
         nvim-tree-lua
         telescope-fzf-native-nvim
-        vim-tmux-navigator
+        #vim-tmux-navigator
       ];
       extraConfig = ''
-        set noemoji
         nnoremap : <cmd>FineCmdline<CR>
       '';
       initLua = ''

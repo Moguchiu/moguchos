@@ -32,9 +32,10 @@ in
     #../../config/pyprland.nix
     #../../config/rmpc.nix
     #../../config/hyprpanel.nix
-    ../../config/zen.nix
+    #../../config/zen.nix
   ];
 
+ 
   # Place Files Inside Home Directory
   home.file."Pictures/Wallpapers" = {
     source = ../../config/wallpapers;
@@ -86,6 +87,7 @@ in
   stylix.targets.rofi.enable = false;
   stylix.targets.hyprland.enable = false;
   stylix.targets.zen-browser.enable = false;
+  #stylix.targets.foot.enable = true;
   gtk = {
     iconTheme = {
       name = "Gruvbox-Plus-Dark";
@@ -146,7 +148,10 @@ in
    hyprpaper = {
      enable = true;
      settings = {
-        wallpaper = [ 
+        preload = [
+        "~/moguchos/config/wallpapers/Hollow_Emblem.png"  
+        ];
+       wallpaper = [ 
          {
           monitor = " ";
           path = "~/moguchos/config/wallpapers/Hollow_Emblem.png";
@@ -159,16 +164,21 @@ in
 
   };
 
+
   programs = {
-     superfile = {
-       enable = true;
+    calibre = {
+     enable = true;
+    };
+
+   superfile = {
+     enable = true;
        settings = {
         theme = "gruvbox-dark-hard";
         default_sort_type = 0;
         transparent_background = true;
       };
     };
-  obs-studio = {
+   obs-studio = {
     enable = true;
 
     # optional Nvidia hardware acceleration
@@ -212,6 +222,20 @@ in
         inactive_tab_font_style bold
       '';
     };
+   /*foot = {
+    enable = true;
+    settings = {
+     
+    cursor = {
+      style = "beam";
+      blink = "yes";
+    };
+
+    mouse = {
+      hide-when-typing = "yes";
+    };
+   };
+   };*/
     zellij= {
       enable = false;
       package = pkgs.zellij;

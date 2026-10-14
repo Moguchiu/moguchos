@@ -5,6 +5,7 @@
   username,
   options,
   lib,
+  inputs,
   ...
 }:
 let
@@ -25,60 +26,83 @@ in
     ../../modules/local-hardware-clock.nix
   ];
 
+  
   boot = {
     # Kernel
     #kernelPackages = pkgs.linuxPackages_zen;
     kernelPackages = pkgs.linuxPackages_latest;
-    #kernelPackages = pkgs.linuxPackages_6_16;
+    #kernelPackages = pkgs.linuxPackages_stable;
+    #kernel.sysctl."vm.swappiness" = 180; #Для RAM
+    /*kernelPatches = [
+    {
+      
+    }
+  ];*/
     # Bootloader.
+    #loader.timeout = 1;
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
-    # Appimage Support
-    /*binfmt.registrations.appimage = {
-      wrapInterpreterInShell = false;
-      interpreter = "${pkgs.appimage-run}/bin/appimage-run";
-      recognitionType = "magic";
-      offset = 0;
-      mask = ''\xff\xff\xff\xff\x00\x00\x00\x00\xff\xff\xff'';
-      magicOrExtension = ''\x7fELF....AI\x02'';
-    };*/
     supportedFilesystems = [ "fuse" ];
     plymouth.enable = true;
   };
-    
+  
+  #ускорение ребилда, но поиск по man не будет работать
+  #documentation.man.cache.enable = false; 
   #battery
-  powerManagement.enable = false;
+  #powerManagement.enable = false;
   #tlp
   services = {
-    power-profiles-daemon.enable = true;
+    power-profiles-daemon.enable = false;
     
-    mullvad-vpn.enable = false;
+    #mullvad-vpn.enable = false;
     /*openvpn.servers = {
      protonVPN  = { config = '' config /home/moguch/moguchos/VPN/nl-free-14.protonvpn.udp.ovpn ''; };
     };*/
     
-    system76-scheduler = {
+    auto-cpufreq = {
+      enable = false;
+       
+    };
+
+    scx = {
+     enable = true;
+     package = pkgs.scx.rustscheds;
+     # Рекомендуемые планировщики:
+     # - scx_bpfland: для отзывчивого десктопа
+     # - scx_lavd: для игр (устраняет микрофризы)[reference:4]
+     scheduler = "scx_bpfland";
+     #extraArgs = [ "--autopower" ];
+    };
+   
+    irqbalance = {
+      enable = true; # Для процессора
+      package = pkgs.irqbalance;
+    };
+
+    /*system76-scheduler = {
      enable = true;
      package = pkgs.system76-scheduler;
      useStockConfig = true;
-    };
+    };*/
 
-    tlp = {
+     tlp = {
       enable = false;
       settings = {
-        
-        TLP_AUTO_SWITCH = 0;
-        TLP_DEFAULT_MODE= "BAL";
-
+             
         #WIFI_PWR_ON_AC= "off"; 
         #WIFI_PWR_ON_BAT= "off";
         #WOL_DISABLE = "N";
 
-        #PLATFORM_PROFILE_ON_AC = "balanced";
-        #PLATFORM_PROFILE_ON_BAT = "balanced";
+        TLP_AUTO_SWITCH=0;
+        #TLP_PROFILE_DEFAULT="BAL";
 
         CPU_BOOST_ON_AC = 1;
-        CPU_BOOST_ON_BAT = 1;
+        CPU_BOOST_ON_BAT = 0;
+
+        CPU_SCALING_GOVERNOR_ON_AC = "performance";
+        CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+        CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+        CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
 
        #Optional helps save long term battery health
        STOP_CHARGE_THRESH_BAT1 = 1; 
@@ -136,8 +160,9 @@ in
       base0E = "d3869b"; # purple
       base0F = "bd6f3e"; # dim-orange
     };
+    targets.kmscon.enable = false;
+
     polarity = "dark";
-    opacity.terminal = 0.8;
     cursor.package = pkgs.bibata-cursors;
     cursor.name = "Bibata-Modern-Ice";
     cursor.size = 24;
@@ -170,7 +195,7 @@ in
    zramSwap = {
      enable = true;
      algorithm = "zstd";
-     memoryPercent = 99;
+     memoryPercent = 50;
      priority = 100;
     };
 
@@ -182,7 +207,10 @@ in
   # Enable networking
   networking.networkmanager.enable = true;
   # Wi-Fi и прошивки
-  hardware.enableRedistributableFirmware = true;
+  hardware = {
+   enableRedistributableFirmware = true;
+  # enableAllFirmware = true;
+  };
 
   # Set your time zone.
   time.timeZone = "Europe/Minsk";
@@ -203,18 +231,30 @@ in
   };
 
   programs = {
-   regreet.enable = false;
+   #hyprland = {
+    #enable = true;
+    # set the flake package
+    #package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+    # make sure to also set the portal package, so that they are in sync
+    #portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+   #};
    nh = {
     enable = true;
     flake = "/home/moguch/moguchos";
    };
-    /*appimage = {
-      enable = true;
-      binfmt = true;
-    };*/
-  hyprland = {
-    enable = true;
-    };
+    
+   appimage = {
+     enable = true;
+     binfmt = true;
+     package = pkgs.appimage-run.override {
+      extraPkgs = pkgs: with pkgs; [
+        icu
+        libxcrypt-legacy
+        # Добавьте сюда другие необходимые библиотеки
+      ];
+     };
+  };
+
     firefox.enable = false;
     starship = {
       enable = true;
@@ -299,14 +339,14 @@ in
       enable = true;
       remotePlay.openFirewall = true;
       dedicatedServer.openFirewall = false;
-      extest.enable = true;
-      fontPackages = with pkgs;[ 
-         nerd-fonts.jetbrains-mono 
-         ];
+      #extest.enable = true;
       #gamescopeSession.enable = true;
-      #extraCompatPackages = [ pkgs.proton-ge-bin ];
+      extraCompatPackages = [ 
+         pkgs.proton-ge-bin
+         #inputs.nix-proton-cachyos.packages.x86_64-linux.proton-cachyos
+      ];
     };
-    gamemode.enable = true;
+    #gamemode.enable = true;
     thunar = {
       enable = true;
       plugins = with pkgs; [
@@ -336,7 +376,7 @@ in
     #htop                       # Мониторинг ресурсов
     #yazi                       # Современный терминальный файловый менеджер  
     #neohtop                    # Мониторинг системы
-    appimage-run               # Appimage
+    #appimage-run               # Appimage
     #file                       #
     #squashfsTools              #
     #fuse3                      # Утилиты Appimage
@@ -376,16 +416,16 @@ in
     wlr-randr                  # Смотреть "входы" монитора
     libgtop                    # Library that reads information about processes and the running system
     dart-sass                  # Reference implementation of Sass, written in Dart
-    gtksourceview3 #Binding to the GtkSourceView library
+    gtksourceview3             #Binding to the GtkSourceView library
     libsoup_3                  #HTTP client/server library for GNOME
     dmidecode                  #Видеть модели железа
     hyprshutdown               #Закрытие приложений и выход из hyprland
     hyprcursor                 #Курсор Hyprland
     quickshell                 # Для запуска всяких шелов и приложений на Qt
-    openvpn                    #Vpn connection
+    #openvpn                    #Vpn connection
     #openresolv                 # DNS что-то там..
     #protonvpn-gui
-    mullvad-vpn
+    #mullvad-vpn
  
     # ⚙️ Dev Tools
     pkg-config                 # Утилита для поиска флагов компиляции
@@ -423,15 +463,21 @@ in
     gimp                       # Редактор изображений
     #krita                      # Графический редактор
     qbittorrent                # Торрент-клиент
-    calibre                    # Чтение и организация e-book
+    #calibre                    # Чтение и организация e-book
+    #foliate                     #Читалки
+    #koodo-reader
+    #thorium-reader
+    #zathura
+    #readest
+    ffmpeg-full                      # Конвертация, сжатие и другая магия с видео и аудио
     #pandoc                     # Конвертация документов
     #focuswriter                # Фокусированное письмо
     #typora                     # Ещё один текстовый редактор
     #zettlr                     # Текстовый редактор
     obsidian                   # Система для управления связанными заметками
-    #(blender.override ({ cudaSupport = true; })) # Blender с поддержкой CUDA
-    (blender.override ({cudaSupport = true; }))
-    /*(wrapOBS { 
+    #blender-with-cuda          # Blender с поддержкой CUDA
+    (blender.override {config.cudaSupport=true; config.rocmSupport=false;})
+     /*(wrapOBS { 
       plugins = with obs-studio-plugins; [      
         # Плагин для захвата экрана в Wayland
         wlrobs
@@ -446,18 +492,19 @@ in
     protontricks               # Утилиты для Proton
     winetricks
     #lutris-free                # Менеджер игр под Linux
-    discord
-    #vesktop                    # discord launcher
+    #discord
+    vesktop                    # discord launcher
     onlyoffice-desktopeditors  # офисный пакет
     telegram-desktop           # Десктопный Telegram-клиент.
     upscayl                    # Апскейлер изображений на основе ИИ
     godot                      # движок
     ryubing                    #Nintendo Switch emul
     eden
+    shadps4-qtlauncher               #PS4 emul
     tkmm                       #Totk modmanager
     dolphin-emu                #Gamecube/Wii/Triforce emul
     cemu                       #Wii U emul
-
+    #dusklight                  #Zelda Twilight princes
 
     # 📎 Клипборд
     wl-clipboard               # Работа с Wayland буфером обмена
@@ -515,8 +562,17 @@ in
     kdePackages.qtstyleplugin-kvantum  #SVG-based Qt5 theme engine plus a config tool and extra themes
     haskellPackages.svg-icons         
     */
+    #lsfg-vk                     #Для lossless scaling fg
+    #lsfg-vk-ui
+
+    qt6.qtbase
+    qt6.qt3d
+    qt6.qtsvg
     qt6.qtwayland
     qt6.qt5compat
+    qt6.qtmultimedia
+    qt6.qttools
+    qt6.qtwebview
     kdePackages.qtmultimedia
     #libsForQt5.qt5.qtmultimedia
     #libsForQt5.qt5ct
@@ -564,6 +620,12 @@ in
     dbus.enable = true;     # Simple interprocess messaging system
     seatd.enable = true;    # важно для wayland
     xserver.enable = false;
+    blendfarm = {           #Для Blender что-то там совместный рендеринг 
+     enable = true ;
+     openFirewall = true;
+     #blenderPackage = pkgs.blender;
+    };
+
     greetd = {
       enable = true;
       useTextGreeter = true;
@@ -589,7 +651,7 @@ in
     fstrim.enable = true;
     gvfs.enable = true;
     tumbler.enable = true;
-    #flatpak.enable = false;
+    flatpak.enable = true;
     printing = {
       enable = false;
       drivers = [
@@ -649,9 +711,16 @@ in
     settings = {
       substituters = [
       "https://cache.nixos-cuda.org"
+      "https://nix-community.cachix.org"
+      "https://hyprland.cachix.org"
       ];
+       trusted-substituters = [
+       "https://hyprland.cachix.org"
+       ];
       trusted-public-keys = [
       "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
       ];
 
       auto-optimise-store = true;

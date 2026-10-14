@@ -10,7 +10,7 @@
   clock24h = true;
 
   # Program Options
-  browser = "zen-beta"; # Set Default Browser (google-chrome-stable for google-chrome)
+  browser = "zen"; # Set Default Browser (google-chrome-stable for google-chrome)
   terminal = "kitty"; # Set Default System Terminal
   keyboardLayout = "us,ru";
   locale = "en_US.UTF-8";

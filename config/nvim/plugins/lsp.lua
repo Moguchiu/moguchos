@@ -13,5 +13,5 @@ vim.lsp.enable('rust_analyzer')
 vim.lsp.config('yamlls', {})
 vim.lsp.enable('yamlls')
 
-vim.lsp.config('bashls', {})
-vim.lsp.enable('bashls')
+--vim.lsp.config('bashls', {})
+--vim.lsp.enable('bashls')

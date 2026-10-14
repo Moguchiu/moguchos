@@ -5,6 +5,7 @@
     #nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
     #nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz";
+    #nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable-small";
     #nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
       #url = "github:nix-community/home-manager/release-25.05";
@@ -12,6 +13,7 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    #hyprland.url = "github:hyprwm/Hyprland";
     stylix = {
       url = "github:danth/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -20,6 +22,7 @@
       url = "github:VonHeikemen/fine-cmdline.nvim";
       flake = false;
     };
+    #nix-proton-cachyos.url = "github:kimjongbing/nix-proton-cachyos";
     /*pyprland = {
       url = "github:hyprland-community/pyprland";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -41,23 +44,21 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };*/
     zen-browser = {
-      url = "github:0xc000022070/zen-browser-flake/beta";
-      # IMPORTANT: we're using "libgbm" and is only available in unstable so ensure
-      # to have it up-to-date or simply don't specify the nixpkgs input
-      inputs.nixpkgs.follows = "nixpkgs";
+       url = "github:youwen5/zen-browser-flake";
+       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-  };
+   };
 
   outputs = { 
     nixpkgs,
     home-manager,
+    #hyprland,
     #pyprland,
     stylix,
     #quickshell,
     #durdraw,
     #hyprsettings,
-    #zen-browser,
+    zen-browser,
     ... 
     }@inputs:
     let
@@ -81,8 +82,9 @@
                 #pyprland.packages."${system}".pyprland
                 #quickshell.packages."${system}".default
                 #durdraw.packages.${system}.default
-                #inputs.zen-browser.packages."${system}".default
-            ];
+                inputs.zen-browser.packages.${system}.default
+               
+               ];
             }  
             inputs.stylix.nixosModules.stylix
             home-manager.nixosModules.home-manager
