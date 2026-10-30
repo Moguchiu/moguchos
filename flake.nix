@@ -4,9 +4,9 @@
   inputs = {
     #nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
     #nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz";
+    #nixpkgs.url = "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz";
     #nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable-small";
-    #nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
       #url = "github:nix-community/home-manager/release-25.05";
       #url = "github:nix-community/home-manager/master";
@@ -44,8 +44,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };*/
     zen-browser = {
-       url = "github:youwen5/zen-browser-flake";
+       url = "github:0xc000022070/zen-browser-flake";
        inputs.nixpkgs.follows = "nixpkgs";
+       inputs.home-manager.follows = "home-manager";
     };
    };
 
@@ -82,7 +83,7 @@
                 #pyprland.packages."${system}".pyprland
                 #quickshell.packages."${system}".default
                 #durdraw.packages.${system}.default
-                inputs.zen-browser.packages.${system}.default
+                #inputs.zen-browser.packages.${system}.default
                
                ];
             }  

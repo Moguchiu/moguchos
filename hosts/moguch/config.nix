@@ -21,9 +21,9 @@ in
   imports = [
     ./hardware.nix
     ./users.nix
-    ../../modules/nvidia-drivers.nix
-    ../../modules/nvidia-prime-drivers.nix
-    ../../modules/local-hardware-clock.nix
+    #../../modules/nvidia-drivers.nix
+    #../../modules/nvidia-prime-drivers.nix
+    #../../modules/local-hardware-clock.nix
   ];
 
   
@@ -38,6 +38,11 @@ in
       
     }
   ];*/
+    kernelParams = [
+     # Отключает ASPM для драйвера MediaTek MT7921e (MT7922)
+    "mt7921e.disable_aspm=Y"
+    #"amd_pstate=active"
+    ];
     # Bootloader.
     #loader.timeout = 1;
     loader.systemd-boot.enable = true;
@@ -74,10 +79,10 @@ in
      #extraArgs = [ "--autopower" ];
     };
    
-    irqbalance = {
+    /*irqbalance = {
       enable = true; # Для процессора
       package = pkgs.irqbalance;
-    };
+    };*/
 
     /*system76-scheduler = {
      enable = true;
@@ -199,16 +204,15 @@ in
      priority = 100;
     };
 
-  # Extra Module Options
-  drivers.nvidia.enable = true;
-  drivers.nvidia-prime.enable = true;
-  local.hardware-clock.enable = false;
-
   # Enable networking
-  networking.networkmanager.enable = true;
+  networking.networkmanager = {
+    enable = true;
+    wifi.powersave = false;
+  };
   # Wi-Fi и прошивки
   hardware = {
    enableRedistributableFirmware = true;
+   cpu.amd.updateMicrocode = true;
   # enableAllFirmware = true;
   };
 
@@ -337,8 +341,24 @@ in
     virt-manager.enable = true;
     steam = {
       enable = true;
+      package = pkgs.steam.override {
+         extraEnv = {
+          # Ваши текущие настройки...
+          MANGOHUD = true;
+          OBS_VKCAPTURE = true;
+          #RADV_TEX_ANISO = 16;
+    
+          # Добавьте эту строку для масштабирования
+          STEAM_FORCE_DESKTOPUI_SCALING = "1.5"; # или 1.25, 1.5 и т.д.
+         };
+         extraLibraries = p: with p; [
+          atk
+         ];
+      };
+      fontPackages = with pkgs; [ source-han-sans ];
       remotePlay.openFirewall = true;
-      dedicatedServer.openFirewall = false;
+      dedicatedServer.openFirewall = true;
+      localNetworkGameTransfers.openFirewall = true;
       #extest.enable = true;
       #gamescopeSession.enable = true;
       extraCompatPackages = [ 
@@ -346,7 +366,7 @@ in
          #inputs.nix-proton-cachyos.packages.x86_64-linux.proton-cachyos
       ];
     };
-    #gamemode.enable = true;
+    gamemode.enable = true;
     thunar = {
       enable = true;
       plugins = with pkgs; [
@@ -373,6 +393,7 @@ in
     git                        # Система контроля версий
     cmatrix                    # Анимация "Матрицы" в терминале
     lolcat                     # Радужный вывод текста
+    zenith-nvidia              #Мониторинг ресурсов
     #htop                       # Мониторинг ресурсов
     #yazi                       # Современный терминальный файловый менеджер  
     #neohtop                    # Мониторинг системы
@@ -457,6 +478,8 @@ in
     pastel                     # Цвет и всякие штуки с ним
     #ashell                     # Bar?
     easyeffects
+    p7zip
+
 
     # 🎮 Игры и графика
     #r2modman                   # менеджер модов 
@@ -493,6 +516,7 @@ in
     winetricks
     #lutris-free                # Менеджер игр под Linux
     #discord
+    mangohud                   #Мониторинг производительности в игре
     vesktop                    # discord launcher
     onlyoffice-desktopeditors  # офисный пакет
     telegram-desktop           # Десктопный Telegram-клиент.
@@ -527,19 +551,19 @@ in
     virt-viewer                # Просмотр виртуальных машин
 
     #🐍 Програмирование ИИ и всё такое
-    /*python313Packages.aubio     #Python-привязки к библиотеке Aubio для анализа аудио (распознавание темпа, частотный анализ и т.п.).
-    python313Packages.pyaudio   #Python-модуль для работы с аудио: запись и воспроизведение через PortAudio.
-    python313Packages.numpy     #	Библиотека для научных вычислений в Python: многомерные массивы, линейная алгебра, статистика и т.п.
+    #python313Packages.aubio     #Python-привязки к библиотеке Aubio для анализа аудио (распознавание темпа, частотный анализ и т.п.).
+    #python313Packages.pyaudio   #Python-модуль для работы с аудио: запись и воспроизведение через PortAudio.
+    #python313Packages.numpy     #	Библиотека для научных вычислений в Python: многомерные массивы, линейная алгебра, статистика и т.п.
     python313                  # Python 3.13
-    python313Packages.pip      # pip для 3.13
+    /*python313Packages.pip      # pip для 3.13
     python313Packages.virtualenv # Виртуальные окружения
     python313Packages.manim    # Анимации в математике
     manim                      # Manim CLI
     texlive.combined.scheme-full # LaTeX-пакеты (полный набор)
     (alpaca.override ({
      ollama = pkgs.ollama-cuda;
-     }))                           # Gui для LLM
-    */
+     }))*/                           # Gui для LLM
+    
 
     # 🧠 IDE и редакторы
     neovide                    # GUI для Neovim
@@ -562,8 +586,8 @@ in
     kdePackages.qtstyleplugin-kvantum  #SVG-based Qt5 theme engine plus a config tool and extra themes
     haskellPackages.svg-icons         
     */
-    #lsfg-vk                     #Для lossless scaling fg
-    #lsfg-vk-ui
+    lsfg-vk                     #Для lossless scaling fg
+    lsfg-vk-ui
 
     qt6.qtbase
     qt6.qt3d
@@ -732,7 +756,7 @@ in
   };
 
   programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [
+  /*programs.nix-ld.libraries = with pkgs; [
     # Системные и basic
     stdenv.cc.cc icu glib zlib openssl expat systemd file xz
 
@@ -758,27 +782,76 @@ in
 
     # Прочие утилиты
     libxi libsm libice libcap libusb1 libidn tbb nspr nss cups libudev0-shim
-  ];    
+  ];*/    
 
 
-  # OpenGL
+  # Nvidia
   
     hardware.graphics = {
     #hardware.opengl = {
     enable = true;
     enable32Bit = true;
     extraPackages = with pkgs; [ 
-      nvidia-vaapi-driver
-      libva-vdpau-driver
-      libvdpau
+      #nvidia-vaapi-driver
+      #libva-vdpau-driver
+      #libvdpau
       libvdpau-va-gl
       egl-wayland
-      vdpauinfo
+      #vdpauinfo
 	    libva
 		  libva-utils
+      #mesa
+      vulkan-loader
       #Для AMD
       #amdvlk
     ];
+  };
+
+  # Load nvidia driver for Xorg and Wayland
+  services.xserver.videoDrivers = ["nvidia"];
+
+  hardware.nvidia = {
+
+    # Modesetting is required.
+    modesetting.enable = true;
+
+    # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
+    # Enable this if you have graphical corruption issues or application crashes after waking
+    # up from sleep. This fixes it by saving the entire VRAM memory to /tmp/ instead 
+    # of just the bare essentials.
+    powerManagement.enable = true;
+
+    # Fine-grained power management. Turns off GPU when not in use.
+    # Experimental and only works on modern Nvidia GPUs (Turing or newer).
+    powerManagement.finegrained = false;
+
+    # Use the NVidia open source kernel module (not to be confused with the
+    # independent third-party "nouveau" open source driver).
+    # Support is limited to the Turing and later architectures. Full list of 
+    # supported GPUs is at: 
+    # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus 
+    # Only available from driver 515.43.04+
+    open = true;
+
+    # Enable the Nvidia settings menu,
+	# accessible via `nvidia-settings`.
+    nvidiaSettings = true;
+
+    # Optionally, you may need to select the appropriate driver version for your specific GPU.
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    #package = config.boot.kernelPackages.nvidiaPackages.beta;
+
+    prime = {
+        sync.enable = true;
+        /*offload = {
+        enable = true;
+        enableOffloadCmd = true;
+        };*/
+        # Make sure to use the correct Bus ID values for your system!
+        amdgpuBusId = "PCI:6:0:0";
+        nvidiaBusId = "PCI:1:0:0";
+    };
+    
   };
 
   console.keyMap = "us";

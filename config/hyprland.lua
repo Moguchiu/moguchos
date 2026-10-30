@@ -23,14 +23,15 @@ hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
 hl.env("XDG_SESSION_TYPE", "wayland")
 hl.env("XDG_SESSION_DESKTOP", "Hyprland")
 
---hl.env("GDK_BACKEND", "wayland,x11")  -- Приоритет Wayland для GTK приложений
---hl.env("QT_QPA_PLATFORM", "wayland;xcb") -- Приоритет Wayland для Qt приложений
+hl.env("GDK_BACKEND", "wayland,x11")  -- Приоритет Wayland для GTK приложений
+hl.env("QT_QPA_PLATFORM", "wayland;xcb") -- Приоритет Wayland для Qt приложений
 --hl.env("QT_WAYLAND_DISABLE_WINDOWDECORATION", "1")
 --hl.env("QT_AUTO_SCREEN_SCALE_FACTOR", "1")
 --hl.env("CLUTTER_BACKEND", "wayland")
---hl.env("SDL_VIDEODRIVER", "wayland") -- Для игр и мультимедиа
+hl.env("SDL_VIDEODRIVER", "wayland") -- Для игр и мультимедиа
 hl.env("NIXOS_OZONE_WL", "1") -- актуально только для NixOS
-
+hl.env("MOZ_ENABLE_WAYLAND", "1") -- Для Firefox и Zen
+--hl.env("AQ_DRM_DEVICES", "/dev/dri/by-path/pci-0000:06:00.0-card:/dev/dri/by-path/pci-0000:01:00.0-card")
 
 ------------------
 ---- MONITORS ----
@@ -51,7 +52,7 @@ hl.monitor({
 local terminal    = "kitty"
 local fileManager = "thunar"
 local menu        = "rofi-launcher"
-local browser     = "zen"
+local browser     = "zen-twilight"
 
 
 -------------------

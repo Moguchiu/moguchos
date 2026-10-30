@@ -32,7 +32,7 @@ in
     #../../config/pyprland.nix
     #../../config/rmpc.nix
     #../../config/hyprpanel.nix
-    #../../config/zen.nix
+    ../../config/zen.nix
   ];
 
  
@@ -121,7 +121,7 @@ in
     (import ../../scripts/emopicker9000.nix { inherit pkgs; })
     (import ../../scripts/task-waybar.nix { inherit pkgs; })
     (import ../../scripts/squirtle.nix { inherit pkgs; })
-    (import ../../scripts/nvidia-offload.nix { inherit pkgs; })
+    #(import ../../scripts/nvidia-offload.nix { inherit pkgs; })
     (import ../../scripts/wallsetter.nix {
       inherit pkgs;
       inherit username;
@@ -166,10 +166,7 @@ in
 
 
   programs = {
-    calibre = {
-     enable = true;
-    };
-
+    
    superfile = {
      enable = true;
        settings = {

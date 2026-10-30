@@ -6,13 +6,14 @@
   ... }:
 {
    imports = [
-    inputs.zen-browser.homeModules.beta
-    # or inputs.zen-browser.homeModules.twilight
-    # or inputs.zen-browser.homeModules.twilight-official
+    #inputs.zen-browser.homeModules.beta
+    inputs.zen-browser.homeModules.twilight
+    #inputs.zen-browser.homeModules.twilight-official
   ];
 
  programs.zen-browser = {
    enable = true;
+   setAsDefaultBrowser = true;
    nativeMessagingHosts = [pkgs.firefoxpwa];
    policies = {
     AutofillAddressEnabled = true;
@@ -32,6 +33,12 @@
       Fingerprinting = true;
     };
    };
+    /*# Здесь же применяются ваши настройки для аппаратного декодирования
+    profiles.default.settings = {
+      "media.ffmpeg.vaapi.enabled" = true;
+      "media.hardware-video-decoding.force-enabled" = true;
+    };*/ 
+ 
   };
 
 
